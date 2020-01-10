@@ -3,7 +3,15 @@
 "use strict";
 
 const path = require("path");
+const fs = require("fs");
 const ncp = require("ncp").ncp;
+const rl = require("readline").createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const generateConfig = {};
+const abc = [];
 
 var args = require("minimist")(process.argv.slice(2), {
   boolean: ["help"],
@@ -12,6 +20,18 @@ var args = require("minimist")(process.argv.slice(2), {
 
 if (args.help) {
   help();
+
+  rl.question("What is your name ? ", function(name) {
+    rl.question("Where do you live ? ", function(country) {
+      fs.writeFile("newfile.txt", "abc", function(err) {
+        if (err) {
+          console.error(err.toString());
+        }
+        console.log("File is created successfully.");
+      });
+      rl.close();
+    });
+  });
 } else if (args.name) {
   ncp.limit = 16;
 
@@ -19,7 +39,7 @@ if (args.help) {
     err
   ) {
     if (err) {
-      return console.error(err);
+      console.error(err.toString());
     }
     console.log("done!");
   });
