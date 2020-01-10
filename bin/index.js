@@ -21,6 +21,7 @@ var args = require("minimist")(process.argv.slice(2), {
 
 if (args.help) {
   help();
+  rl.close();
 } else if (args.version) {
   // ncp.limit = 16;
 
@@ -33,7 +34,7 @@ if (args.help) {
   //   console.log("done!");
   // });
   console.log("v.1.0.0");
-
+  rl.close();
   // console.log(__dirname + "\\" + args.name);
 } else if (args._[0] == "init") {
   let overwrite = false;
@@ -93,6 +94,15 @@ if (args.help) {
         }
       }
     );
+    rl.close();
+    var filePath = path.join(dir, "generateConfig.txt");
+    fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
+      if (!err) {
+        console.log("received data: " + data);
+      } else {
+        console.log(err);
+      }
+    });
   }
 } else {
   rl.close();
@@ -105,10 +115,12 @@ if (args.help) {
  */
 function help() {
   console.log();
-  console.log("ex1 usage:");
-  console.log("  node1.js --help");
+  console.log("Usage:");
+  console.log("  $ gensetup [options]");
   console.log();
-  console.log("--help                 print this help");
-  console.log("--name={FOLDERNAME}    create new folder");
+  console.log("Options:");
+  console.log("-h, --help            print this help");
+  console.log("-v, --version         print version");
+  console.log("init [folder name]    create new folder");
   console.log();
 }

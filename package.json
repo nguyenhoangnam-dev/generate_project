@@ -9,7 +9,7 @@
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {
-    "setup": "./bin/index.js"
+    "gensetup": "./bin/index.js"
   },
   "dependencies": {
     "minimist": "^1.2.0",
