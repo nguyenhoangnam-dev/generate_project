@@ -10,8 +10,9 @@ const rl = require("readline").createInterface({
   output: process.stdout
 });
 
-const generateConfig = {};
-const abc = [];
+const htmlPreprocessor = ["none", "haml", "pug", "slim"];
+const cssPreprocessor = ["none", "sass", "scss", "postcss", "stylus", "less"];
+const jsPreprocessor = ["none", "typescript", "coffeescript", "livescript"];
 
 var args = require("minimist")(process.argv.slice(2), {
   boolean: ["help"],
@@ -21,17 +22,20 @@ var args = require("minimist")(process.argv.slice(2), {
 if (args.help) {
   help();
 
-  rl.question("What is your name ? ", function(name) {
-    rl.question("Where do you live ? ", function(country) {
-      fs.writeFile("newfile.txt", "abc", function(err) {
-        if (err) {
-          console.error(err.toString());
-        }
-        console.log("File is created successfully.");
+  rl.question(
+    "HTML preprocessor: ( " + htmlPreprocessor.join("| ") + ")",
+    function(name) {
+      rl.question("Where do you live ? ", function(country) {
+        fs.writeFile("newfile.txt", "abc", function(err) {
+          if (err) {
+            console.error(err.toString());
+          }
+          console.log("File is created successfully.");
+        });
+        rl.close();
       });
-      rl.close();
-    });
-  });
+    }
+  );
 } else if (args.name) {
   ncp.limit = 16;
 
