@@ -5,10 +5,11 @@
 const path = require("path");
 const fs = require("fs");
 const ncp = require("ncp").ncp;
-const rl = require("readline").createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// const rl = require("readline").createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
+const prompt = require("prompt-sync")();
 
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
 const cssPreprocessor = ["none", "sass", "scss", "postcss", "stylus", "less"];
@@ -21,7 +22,7 @@ var args = require("minimist")(process.argv.slice(2), {
 
 if (args.help) {
   help();
-  rl.close();
+  // rl.close();
 } else if (args.version) {
   // ncp.limit = 16;
 
@@ -34,7 +35,7 @@ if (args.help) {
   //   console.log("done!");
   // });
   console.log("v.1.0.0");
-  rl.close();
+  // rl.close();
   // console.log(__dirname + "\\" + args.name);
 } else if (args._[0] == "init") {
   let overwrite = false;
@@ -52,60 +53,92 @@ if (args.help) {
   }
 
   if (!overwrite) {
-    rl.question(
-      "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): ",
-      function(html) {
-        if (!htmlPreprocessor.includes(html)) {
-          console.error("Invalid html preprocessor type file. ");
-          rl.close();
+    var html = prompt(
+      "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): "
+    );
+    if (!htmlPreprocessor.includes(html)) {
+      console.error("Invalid html preprocessor type file. ");
+    } else {
+      var css = prompt(
+        "CSS preprocessor ( " + cssPreprocessor.join(" | ") + " ): "
+      );
+      if (!cssPreprocessor.includes(css)) {
+        console.error("Invalid css preprocessor type file. ");
+      } else {
+        var js = prompt(
+          "JS preprocessor ( " + jsPreprocessor.join(" | ") + " ): "
+        );
+        if (!jsPreprocessor.includes(js)) {
+          console.error("Invalid js preprocessor type file. ");
         } else {
-          rl.question(
-            "CSS preprocessor ( " + cssPreprocessor.join(" | ") + " ): ",
-            function(css) {
-              if (!cssPreprocessor.includes(css)) {
-                console.error("Invalid css preprocessor type file. ");
-                rl.close();
-              } else {
-                rl.question(
-                  "JS preprocessor ( " + jsPreprocessor.join(" | ") + " ): ",
-                  function(js) {
-                    if (!jsPreprocessor.includes(js)) {
-                      console.error("Invalid js preprocessor type file. ");
-                      rl.close();
-                    } else {
-                      let configText = `${html} \n` + `${css} \n` + `${js}`;
-                      fs.writeFile(
-                        dir + "\\" + "generateConfig.txt",
-                        configText,
-                        function(err) {
-                          if (err) {
-                            console.error(err.toString());
-                          }
-                          console.log("File is created successfully.");
-                        }
-                      );
-                      rl.close();
-                    }
-                  }
-                );
-              }
+          let configText = `${html} \n` + `${css} \n` + `${js}`;
+          fs.writeFile(dir + "\\" + "generateConfig.txt", configText, function(
+            err
+          ) {
+            if (err) {
+              console.error(err.toString());
             }
-          );
+            console.log("File is created successfully.");
+          });
         }
       }
-    );
-    rl.close();
+    }
+
+    // rl.question(
+    //   "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): ",
+    //   function(html) {
+    //     if (!htmlPreprocessor.includes(html)) {
+    //       console.error("Invalid html preprocessor type file. ");
+    //       rl.close();
+    //     } else {
+    //       rl.question(
+    //         "CSS preprocessor ( " + cssPreprocessor.join(" | ") + " ): ",
+    //         function(css) {
+    //           if (!cssPreprocessor.includes(css)) {
+    //             console.error("Invalid css preprocessor type file. ");
+    //             rl.close();
+    //           } else {
+    //             rl.question(
+    //               "JS preprocessor ( " + jsPreprocessor.join(" | ") + " ): ",
+    //               function(js) {
+    //                 if (!jsPreprocessor.includes(js)) {
+    //                   console.error("Invalid js preprocessor type file. ");
+    //                   rl.close();
+    //                 } else {
+    //                   let configText = `${html} \n` + `${css} \n` + `${js}`;
+    //                   fs.writeFile(
+    //                     dir + "\\" + "generateConfig.txt",
+    //                     configText,
+    //                     function(err) {
+    //                       if (err) {
+    //                         console.error(err.toString());
+    //                       }
+    //                       console.log("File is created successfully.");
+    //                     }
+    //                   );
+    //                   rl.close();
+    //                 }
+    //               }
+    //             );
+    //           }
+    //         }
+    //       );
+    //     }
+    //   }
+    // );
+    // rl.close();
     var filePath = path.join(dir, "generateConfig.txt");
+    var dataOption = [];
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
       if (!err) {
-        console.log("received data: " + data);
+        dataOption = data.split("\n");
       } else {
         console.log(err);
       }
     });
   }
 } else {
-  rl.close();
+  // rl.close();
 }
 
 // *********************************************
