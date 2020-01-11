@@ -75,6 +75,7 @@ if (args.help) {
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
       if (!err) {
         dataOption = data.split("\n");
+        makeSrc(dataOption);
       } else {
         console.log(err);
       }
