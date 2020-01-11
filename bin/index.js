@@ -4,7 +4,6 @@
 
 const path = require("path");
 const fs = require("fs");
-const ncp = require("ncp").ncp;
 const prompt = require("prompt-sync")();
 
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
