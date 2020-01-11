@@ -5,15 +5,11 @@
 const path = require("path");
 const fs = require("fs");
 const ncp = require("ncp").ncp;
-// const rl = require("readline").createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
 const prompt = require("prompt-sync")();
 
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
-const cssPreprocessor = ["none", "sass", "scss", "postcss", "stylus", "less"];
-const jsPreprocessor = ["none", "typescript", "coffeescript", "livescript"];
+const cssPreprocessor = ["none", "sass", "scss", "stylus", "less"];
+const jsPreprocessor = ["none", "typescript", "coffeescript"];
 
 var args = require("minimist")(process.argv.slice(2), {
   boolean: ["help", "version"],
@@ -74,8 +70,8 @@ if (args.help) {
     var dataOption = [];
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
       if (!err) {
-        dataOption = data.split("\n");
-        makeSrc(dataOption);
+        dataOption = data.split("\n").map(x => x.trim());
+        makeSrc(dataOption, dir);
       } else {
         console.log(err);
       }
@@ -90,7 +86,110 @@ if (args.help) {
  * Create src folder
  * @param {array} data Save all data type to create folder source
  */
-function makeSrc(data) {}
+function makeSrc(data, dir) {
+  let dirsrc = path.join(dir, "src");
+  fs.mkdirSync(dirsrc);
+
+  fs.mkdirSync(dirsrc + "\\" + "css");
+  fs.writeFile(dirsrc + "\\" + "css" + "\\" + "main.css", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File main.css is created successfully.");
+  });
+  fs.mkdirSync(dirsrc + "\\" + "js");
+  fs.writeFile(dirsrc + "\\" + "js" + "\\" + "index.js", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File index.js is created successfully.");
+  });
+  fs.writeFile(dirsrc + "\\" + "index.html", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File index.html is created successfully.");
+  });
+
+  if (data[0] != "none") {
+    fs.mkdirSync(dirsrc + "\\" + data[0]);
+    fs.writeFile(
+      dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
+      "",
+      function(err) {
+        if (err) {
+          console.error(err.toString());
+        }
+        console.log(`File index.${data[0]} is created successfully.`);
+      }
+    );
+  }
+
+  if (data[1] != "none") {
+    fs.mkdirSync(dirsrc + "\\" + data[1]);
+    fs.writeFile(
+      dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+      "",
+      function(err) {
+        if (err) {
+          console.error(err.toString());
+        }
+        console.log(`File main.${data[1]} is created successfully.`);
+      }
+    );
+  }
+
+  if (data[2] != "none") {
+    if (data[2] == "typescript") {
+      fs.mkdirSync(dirsrc + "\\" + "ts");
+      fs.writeFile(dirsrc + "\\" + "ts" + "\\" + `index.ts`, "", function(err) {
+        if (err) {
+          console.error(err.toString());
+        }
+        console.log(`File main.ts is created successfully.`);
+      });
+    } else {
+      fs.mkdirSync(dirsrc + "\\" + data[2]);
+      fs.writeFile(
+        dirsrc + "\\" + data[2] + "\\" + `index.coffee`,
+        "",
+        function(err) {
+          if (err) {
+            console.error(err.toString());
+          }
+          console.log(`File main.coffee is created successfully.`);
+        }
+      );
+    }
+  }
+
+  fs.mkdirSync(dirsrc + "\\" + "font");
+  fs.mkdirSync(dirsrc + "\\" + "img");
+  fs.mkdirSync(dirsrc + "\\" + "lib");
+
+  fs.writeFile(dir + "\\" + ".gitignore", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File .gitignore is created successfully.");
+  });
+
+  fs.writeFile(dir + "\\" + "README.md", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File README.md is created successfully.");
+  });
+
+  fs.writeFile(dir + "\\" + "LICENSE", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File LICENSE is created successfully.");
+  });
+
+  fs.unlinkSync(dir + "\\" + "generateConfig.txt");
+}
 
 /**
  * Print help to remind command line able to use
