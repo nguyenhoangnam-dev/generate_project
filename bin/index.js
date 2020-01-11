@@ -22,21 +22,8 @@ var args = require("minimist")(process.argv.slice(2), {
 
 if (args.help) {
   help();
-  // rl.close();
 } else if (args.version) {
-  // ncp.limit = 16;
-
-  // ncp("F:\\2020\\gulp_scss", process.cwd() + "\\" + args.name, function error(
-  //   err
-  // ) {
-  //   if (err) {
-  //     console.error(err.toString());
-  //   }
-  //   console.log("done!");
-  // });
   console.log("v.1.0.0");
-  // rl.close();
-  // console.log(__dirname + "\\" + args.name);
 } else if (args._[0] == "init") {
   let overwrite = false;
   let dir = process.cwd();
@@ -83,50 +70,6 @@ if (args.help) {
         }
       }
     }
-
-    // rl.question(
-    //   "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): ",
-    //   function(html) {
-    //     if (!htmlPreprocessor.includes(html)) {
-    //       console.error("Invalid html preprocessor type file. ");
-    //       rl.close();
-    //     } else {
-    //       rl.question(
-    //         "CSS preprocessor ( " + cssPreprocessor.join(" | ") + " ): ",
-    //         function(css) {
-    //           if (!cssPreprocessor.includes(css)) {
-    //             console.error("Invalid css preprocessor type file. ");
-    //             rl.close();
-    //           } else {
-    //             rl.question(
-    //               "JS preprocessor ( " + jsPreprocessor.join(" | ") + " ): ",
-    //               function(js) {
-    //                 if (!jsPreprocessor.includes(js)) {
-    //                   console.error("Invalid js preprocessor type file. ");
-    //                   rl.close();
-    //                 } else {
-    //                   let configText = `${html} \n` + `${css} \n` + `${js}`;
-    //                   fs.writeFile(
-    //                     dir + "\\" + "generateConfig.txt",
-    //                     configText,
-    //                     function(err) {
-    //                       if (err) {
-    //                         console.error(err.toString());
-    //                       }
-    //                       console.log("File is created successfully.");
-    //                     }
-    //                   );
-    //                   rl.close();
-    //                 }
-    //               }
-    //             );
-    //           }
-    //         }
-    //       );
-    //     }
-    //   }
-    // );
-    // rl.close();
     var filePath = path.join(dir, "generateConfig.txt");
     var dataOption = [];
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
@@ -138,10 +81,15 @@ if (args.help) {
     });
   }
 } else {
-  // rl.close();
 }
 
 // *********************************************
+
+/**
+ * Create src folder
+ * @param {array} data Save all data type to create folder source
+ */
+function makeSrc(data) {}
 
 /**
  * Print help to remind command line able to use
