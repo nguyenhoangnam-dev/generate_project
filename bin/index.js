@@ -162,6 +162,33 @@ function makeSrc(data, dir) {
       );
     }
   }
+
+  fs.mkdirSync(dirsrc + "\\" + "font");
+  fs.mkdirSync(dirsrc + "\\" + "img");
+  fs.mkdirSync(dirsrc + "\\" + "lib");
+
+  fs.writeFile(dir + "\\" + ".gitignore", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File .gitignore is created successfully.");
+  });
+
+  fs.writeFile(dir + "\\" + "README.md", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File README.md is created successfully.");
+  });
+
+  fs.writeFile(dir + "\\" + "LICENSE", "", function(err) {
+    if (err) {
+      console.error(err.toString());
+    }
+    console.log("File LICENSE is created successfully.");
+  });
+
+  fs.unlinkSync(dir + "\\" + "generateConfig.txt");
 }
 
 /**
