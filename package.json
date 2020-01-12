@@ -1,6 +1,6 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "this is tool to generate setup folder similar to yeoman",
   "main": "bin/index.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "gensetup": "./bin/index.js"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
     "minimist": "^1.2.0",
     "syncprompt": "^2.0.0"
   }

@@ -9,6 +9,8 @@ const fs = require("fs");
 // Get input from terminal
 const prompt = require("syncprompt");
 
+const chalk = require("chalk");
+
 // Store all kind of preprocessor able to use
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
 const cssPreprocessor = ["none", "sass", "scss", "stylus", "less"];
@@ -50,7 +52,7 @@ if (args.help) {
     } else {
       // This directory is existed
       overwrite = true;
-      console.error("This file name is exist !");
+      console.error(chalk.yellow("This file name is exist !"));
     }
 
     // Check if dirname is existed
@@ -69,7 +71,7 @@ if (args.help) {
     // Check if option is exist
     if (!htmlPreprocessor.includes(html)) {
       // Show error
-      console.error("Invalid html preprocessor type file. ");
+      console.error(chalk.red("Invalid html preprocessor type file. "));
     } else {
       // Store css preprocessor option if html option existed
       var css = prompt(
@@ -79,7 +81,7 @@ if (args.help) {
       // Check if option is existed
       if (!cssPreprocessor.includes(css)) {
         // Show error
-        console.error("Invalid css preprocessor type file. ");
+        console.error(chalk.red("Invalid css preprocessor type file. "));
       } else {
         // Store js preprocessor option if css option in existed
         var js = prompt(
@@ -89,7 +91,7 @@ if (args.help) {
         // Check if option is existed
         if (!jsPreprocessor.includes(js)) {
           // show error
-          console.error("Invalid js preprocessor type file. ");
+          console.error(chalk.red("Invalid js preprocessor type file. "));
         } else {
           // Content of config file
           let configText = `${html} \n` + `${css} \n` + `${js}`;
@@ -100,9 +102,8 @@ if (args.help) {
           ) {
             // Show error
             if (err) {
-              console.error(err.toString());
+              console.error(chalk.red(err.toString()));
             }
-            console.log("File is created successfully.");
           });
         }
       }
@@ -157,9 +158,9 @@ function makeSrc(data, dir) {
   fs.writeFile(dirsrc + "\\" + "css" + "\\" + "main.css", "", function(err) {
     // Show error
     if (err) {
-      console.error(err.toString());
+      console.error(chalk.red(err.toString()));
     }
-    console.log("File main.css is created successfully.");
+    console.log(chalk.green("+ File main.css is created successfully."));
   });
 
   // Create js folder default
@@ -170,7 +171,7 @@ function makeSrc(data, dir) {
     if (err) {
       console.error(err.toString());
     }
-    console.log("File index.js is created successfully.");
+    console.log(chalk.green("+ File index.js is created successfully."));
   });
 
   // Create index.html file default
@@ -178,7 +179,7 @@ function makeSrc(data, dir) {
     if (err) {
       console.error(err.toString());
     }
-    console.log("File index.html is created successfully.");
+    console.log(chalk.green("+ File index.html is created successfully."));
   });
 
   // Check if user contain html preprocessor
@@ -194,7 +195,9 @@ function makeSrc(data, dir) {
           // Show error
           console.error(err.toString());
         }
-        console.log(`File index.${data[0]} is created successfully.`);
+        console.log(
+          chalk.green(`+ File index.${data[0]} is created successfully.`)
+        );
       }
     );
   }
@@ -212,7 +215,9 @@ function makeSrc(data, dir) {
           // Show error
           console.error(err.toString());
         }
-        console.log(`File main.${data[1]} is created successfully.`);
+        console.log(
+          chalk.green(`+ File main.${data[1]} is created successfully.`)
+        );
       }
     );
   }
@@ -229,7 +234,7 @@ function makeSrc(data, dir) {
           // Show error
           console.error(err.toString());
         }
-        console.log(`File main.ts is created successfully.`);
+        console.log(chalk.green(`+ File main.ts is created successfully.`));
       });
     } else {
       // Create coffee folder instead of coffeescript
@@ -243,7 +248,9 @@ function makeSrc(data, dir) {
             // Show error
             console.error(err.toString());
           }
-          console.log(`File main.coffee is created successfully.`);
+          console.log(
+            chalk.green(`+ File main.coffee is created successfully.`)
+          );
         }
       );
     }
@@ -262,7 +269,7 @@ function makeSrc(data, dir) {
       // Show error
       console.error(err.toString());
     }
-    console.log("File .gitignore is created successfully.");
+    console.log(chalk.green("+ File .gitignore is created successfully."));
   });
 
   // TODO: Create README.md file to show in github in future
@@ -271,7 +278,7 @@ function makeSrc(data, dir) {
       // Show error if can not create file
       console.error(err.toString());
     }
-    console.log("File README.md is created successfully.");
+    console.log(chalk.green("+ File README.md is created successfully."));
   });
 
   // TODO: Create LICENSE file to show license of open source project in github in future
@@ -279,7 +286,7 @@ function makeSrc(data, dir) {
     if (err) {
       console.error(err.toString());
     }
-    console.log("File LICENSE is created successfully.");
+    console.log(chalk.green("+ File LICENSE is created successfully."));
   });
 
   // Delete config file after create success folder
