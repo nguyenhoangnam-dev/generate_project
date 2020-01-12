@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
+    "completion": "^1.0.1",
     "minimist": "^1.2.0",
+    "node-emoji": "^1.10.0",
+    "omelette": "^0.4.12",
     "syncprompt": "^2.0.0"
   }
 }
