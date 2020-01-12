@@ -7,7 +7,7 @@ const path = require("path");
 // Create file, delete file, create folder, write to file
 const fs = require("fs");
 // Get input from terminal
-const prompt = require("prompt-sync")();
+const prompt = require("syncprompt");
 
 // Store all kind of preprocessor able to use
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
@@ -63,10 +63,9 @@ if (args.help) {
   // Check if dirname is existed
   if (!overwrite) {
     // Store html preprocessor option
-    var html = prompt(
+    let html = prompt(
       "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): "
     );
-
     // Check if option is exist
     if (!htmlPreprocessor.includes(html)) {
       // Show error
@@ -108,7 +107,6 @@ if (args.help) {
         }
       }
     }
-
     // Join config file and dir in path
     var filePath = path.join(dir, "generateConfig.txt");
 
