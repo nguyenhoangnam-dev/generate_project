@@ -4,16 +4,20 @@
 
 // Join path of process.cwd() and fie
 const path = require("path");
+
 // Create file, delete file, create folder, write to file
 const fs = require("fs");
+
 // Get input from terminal
 const prompt = require("syncprompt");
 
+// This color text
 const chalk = require("chalk");
 
-// const ora = require("ora");
+// This show emoji
 const emoji = require("node-emoji");
 
+// This turn object to tree
 const treeify = require("treeify");
 
 // Store all kind of preprocessor able to use
@@ -477,12 +481,15 @@ function makeSrc(data, dir) {
               " File genproject.json is created successfully."
             )
           );
+          // This show that to do after create project
           console.log();
           console.log();
           let dirArr = dir.split("\\");
           let folderName = dirArr[dirArr.length - 1];
           console.log(chalk.green("Let go to directory:    cd " + folderName));
           console.log(chalk.green("Show folder and file:   gensetup -t"));
+          console.log();
+          console.log();
         });
       } else {
         showError("Fail to create folder ", true);
