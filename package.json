@@ -1,7 +1,7 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "1.0.3",
-  "description": "this is tool to generate setup folder similar to yeoman",
+  "version": "1.1.0",
+  "description": "This is tool to create front-end project",
   "main": "bin/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,11 +17,8 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
-    "completion": "^1.0.1",
-    "directory-tree": "^2.2.4",
     "minimist": "^1.2.0",
     "node-emoji": "^1.10.0",
-    "omelette": "^0.4.12",
     "syncprompt": "^2.0.0",
     "treeify": "^1.1.0"
   }
