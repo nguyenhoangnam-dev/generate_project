@@ -1,6 +1,6 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This is tool to create front-end project",
   "main": "bin/index.js",
   "scripts": {
