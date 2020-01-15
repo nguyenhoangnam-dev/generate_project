@@ -6,6 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/congviec18120062/generate_project.git"
+  },
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {
@@ -14,9 +18,11 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "completion": "^1.0.1",
+    "directory-tree": "^2.2.4",
     "minimist": "^1.2.0",
     "node-emoji": "^1.10.0",
     "omelette": "^0.4.12",
-    "syncprompt": "^2.0.0"
+    "syncprompt": "^2.0.0",
+    "treeify": "^1.1.0"
   }
 }

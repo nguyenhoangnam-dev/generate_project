@@ -14,6 +14,8 @@ const chalk = require("chalk");
 // const ora = require("ora");
 const emoji = require("node-emoji");
 
+const treeify = require("treeify");
+
 // Store all kind of preprocessor able to use
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
 const cssPreprocessor = ["none", "sass", "scss", "stylus", "less"];
@@ -22,10 +24,12 @@ const jsPreprocessor = ["none", "typescript", "coffeescript"];
 // Store all config of argument of cli-app
 var args = require("minimist")(process.argv.slice(2), {
   // Use --
-  boolean: ["help", "version"],
+  boolean: ["help", "version", "tree"],
   // Use -
-  alias: { h: "help", v: "version" }
+  alias: { h: "help", v: "version", t: "tree" }
 });
+
+var dir = process.cwd();
 
 // Check user argument
 if (args.help) {
@@ -44,7 +48,6 @@ if (args.help) {
   let overwrite = false;
 
   // Get current project directory
-  let dir = process.cwd();
 
   // Check second argument
   if (args._[1]) {
@@ -145,10 +148,31 @@ if (args.help) {
       }
     });
   }
+} else if (args.tree) {
+  showTree();
 } else {
+  showError(chalk.red(emoji.get("x") + "Can not find this command "), true);
 }
 
 // *********************************************
+
+function showError(mess, showHelp = false) {
+  console.error(mess);
+  if (showHelp) {
+    help();
+  }
+}
+
+function showTree() {
+  let dir1 = process.cwd();
+  if (fs.existsSync(dir + "\\" + "genproject.json")) {
+    let configData = fs.readFileSync(dir + "\\" + "genproject.json");
+    let obj = JSON.parse(configData);
+    console.log(treeify.asTree(obj, true, false));
+  } else {
+    console.log(chalk.red("It missed gensetup.json"));
+  }
+}
 
 /**
  * Create src folder
@@ -156,157 +180,12 @@ if (args.help) {
  * @param {string} dir Store directory of source
  */
 function makeSrc(data, dir) {
-  // Store directory of src folder
-  let dirsrc = path.join(dir, "src");
-
-  // Create source folder
-  fs.mkdirSync(dirsrc);
-
-  // Default folder and file
-  // Create css folder default
-  fs.mkdirSync(dirsrc + "\\" + "css");
-  // Create main.css file in css folder default
-  fs.writeFile(dirsrc + "\\" + "css" + "\\" + "main.css", "", function(err) {
-    // Show error
-    if (err) {
-      console.error(chalk.red(emoji.get("x"), err.toString()));
-    }
-    console.log(
-      chalk.green(
-        emoji.get("heavy_check_mark"),
-        " File main.css is created successfully."
-      )
-    );
-  });
-
-  // Create js folder default
-  fs.mkdirSync(dirsrc + "\\" + "js");
-  // Create index.js file in js folder default
-  fs.writeFile(dirsrc + "\\" + "js" + "\\" + "index.js", "", function(err) {
-    // Show error
-    if (err) {
-      console.error(chalk.red(emoji.get("x"), err.toString()));
-    }
-    console.log(
-      chalk.green(
-        emoji.get("heavy_check_mark"),
-        " File index.js is created successfully."
-      )
-    );
-  });
-
-  // Create index.html file default
-  fs.writeFile(dirsrc + "\\" + "index.html", "", function(err) {
-    if (err) {
-      console.error(chalk.red(emoji.get("x"), err.toString()));
-    }
-    console.log(
-      chalk.green(
-        emoji.get("heavy_check_mark"),
-        " File index.html is created successfully."
-      )
-    );
-  });
-
-  // Check if user contain html preprocessor
-  if (data[0] != "none") {
-    // Create folder with data type
-    fs.mkdirSync(dirsrc + "\\" + data[0]);
-    // Create file with data type at the end
-    fs.writeFile(
-      dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
-      "",
-      function(err) {
-        if (err) {
-          // Show error
-          console.error(chalk.red(emoji.get("x"), err.toString()));
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            ` File index.${data[0]} is created successfully.`
-          )
-        );
-      }
-    );
-  }
-
-  // Check if user contain css preprocessor
-  if (data[1] != "none") {
-    // Create folder with data type
-    fs.mkdirSync(dirsrc + "\\" + data[1]);
-    // Create file with data type at the end
-    fs.writeFile(
-      dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
-      "",
-      function(err) {
-        if (err) {
-          // Show error
-          console.error(chalk.red(emoji.get("x"), err.toString()));
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            ` File main.${data[1]} is created successfully.`
-          )
-        );
-      }
-    );
-  }
-
-  // Check if user contain js preprocessor
-  if (data[2] != "none") {
-    // Check if user use typescript
-    if (data[2] == "typescript") {
-      // Create ts folder instead of typescript
-      fs.mkdirSync(dirsrc + "\\" + "ts");
-      // Create index.ts file in ts folder
-      fs.writeFile(dirsrc + "\\" + "ts" + "\\" + `index.ts`, "", function(err) {
-        if (err) {
-          // Show error
-          console.error(chalk.red(emoji.get("x"), err.toString()));
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            ` File main.ts is created successfully.`
-          )
-        );
-      });
-    } else {
-      // Create coffee folder instead of coffeescript
-      fs.mkdirSync(dirsrc + "\\" + data[2]);
-      // Create index.coffee file in coffeescript folder
-      fs.writeFile(
-        dirsrc + "\\" + data[2] + "\\" + `index.coffee`,
-        "",
-        function(err) {
-          if (err) {
-            // Show error
-            console.error(chalk.red(emoji.get("x"), err.toString()));
-          }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              ` File main.coffee is created successfully.`
-            )
-          );
-        }
-      );
-    }
-  }
-
-  // TODO: Create font folder for store font in future
-  fs.mkdirSync(dirsrc + "\\" + "font");
-  // TODO: Create img folder for store img in future
-  fs.mkdirSync(dirsrc + "\\" + "img");
-  // TODO: Create lib folder for store lib in future
-  fs.mkdirSync(dirsrc + "\\" + "lib");
+  let objTree = {};
 
   // TODO: Create .gitignore file to ignore git add node_modules in future
   fs.writeFile(dir + "\\" + ".gitignore", "node_modules", function(err) {
     if (err) {
-      // Show error
+      //Show error
       console.error(chalk.red(emoji.get("x"), err.toString()));
     }
     console.log(
@@ -320,13 +199,27 @@ function makeSrc(data, dir) {
   // TODO: Create README.md file to show in github in future
   fs.writeFile(dir + "\\" + "README.md", "", function(err) {
     if (err) {
-      // Show error if can not create file
+      //Show error if can not create file
       console.error(chalk.red(emoji.get("x"), err.toString()));
     }
     console.log(
       chalk.green(
         emoji.get("heavy_check_mark"),
         " File README.md is created successfully."
+      )
+    );
+  });
+
+  // TODO: Create gulpfile.js file to show in github in future
+  fs.writeFile(dir + "\\" + "gulpfile.js", "", function(err) {
+    if (err) {
+      //Show error if can not create file
+      console.error(chalk.red(emoji.get("x"), err.toString()));
+    }
+    console.log(
+      chalk.green(
+        emoji.get("heavy_check_mark"),
+        " File gulpfile.js is created successfully."
       )
     );
   });
@@ -344,8 +237,195 @@ function makeSrc(data, dir) {
     );
   });
 
+  // Store directory of src folder
+  let dirsrc = path.join(dir, "src");
+
+  // Create source folder
+  fs.mkdirSync(dirsrc);
+  objTree["src"] = {};
+  // Default folder and file
+  // Create css folder default
+  fs.mkdirSync(dirsrc + "\\" + "css");
+  objTree["src"]["css"] = {};
+  // Create main.css file in css folder default
+  fs.writeFile(dirsrc + "\\" + "css" + "\\" + "main.css", "", function(err) {
+    // Show error
+    if (err) {
+      console.error(chalk.red(emoji.get("x"), err.toString()));
+    }
+    console.log(
+      chalk.green(
+        emoji.get("heavy_check_mark"),
+        " File main.css is created successfully."
+      )
+    );
+    objTree["src"]["css"]["main.css"] = null;
+  });
+
+  // Create js folder default
+  fs.mkdirSync(dirsrc + "\\" + "js");
+  objTree["src"]["js"] = {};
+  // Create index.js file in js folder default
+  fs.writeFile(dirsrc + "\\" + "js" + "\\" + "index.js", "", function(err) {
+    // Show error
+    if (err) {
+      console.error(chalk.red(emoji.get("x"), err.toString()));
+    }
+    console.log(
+      chalk.green(
+        emoji.get("heavy_check_mark"),
+        " File index.js is created successfully."
+      )
+    );
+    objTree["src"]["js"]["index.js"] = null;
+  });
+
+  // Create index.html file default
+  fs.writeFile(dirsrc + "\\" + "index.html", "", function(err) {
+    if (err) {
+      console.error(chalk.red(emoji.get("x"), err.toString()));
+    }
+    console.log(
+      chalk.green(
+        emoji.get("heavy_check_mark"),
+        " File index.html is created successfully."
+      )
+    );
+    objTree["src"]["index.html"] = null;
+  });
+
+  // Check if user contain html preprocessor
+  if (data[0] != "none") {
+    // Create folder with data type
+    fs.mkdirSync(dirsrc + "\\" + data[0]);
+    objTree["src"][data[0]] = {};
+    // Create file with data type at the end
+    fs.writeFile(
+      dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
+      "",
+      function(err) {
+        if (err) {
+          // Show error
+          console.error(chalk.red(emoji.get("x"), err.toString()));
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            ` File index.${data[0]} is created successfully.`
+          )
+        );
+        objTree["src"][data[0]][`index.${data[0]}`] = null;
+      }
+    );
+  }
+
+  // Check if user contain css preprocessor
+  if (data[1] != "none") {
+    // Create folder with data type
+    fs.mkdirSync(dirsrc + "\\" + data[1]);
+    objTree["src"][data[1]] = {};
+    // Create file with data type at the end
+    fs.writeFile(
+      dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+      "",
+      function(err) {
+        if (err) {
+          // Show error
+          console.error(chalk.red(emoji.get("x"), err.toString()));
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            ` File main.${data[1]} is created successfully.`
+          )
+        );
+        objTree["src"][data[1]][`main.${data[1]}`] = null;
+      }
+    );
+  }
+
+  // Check if user contain js preprocessor
+  if (data[2] != "none") {
+    // Check if user use typescript
+    if (data[2] == "typescript") {
+      // Create ts folder instead of typescript
+      fs.mkdirSync(dirsrc + "\\" + "ts");
+      objTree["src"]["ts"] = {};
+      // Create index.ts file in ts folder
+      fs.writeFile(dirsrc + "\\" + "ts" + "\\" + `index.ts`, "", function(err) {
+        if (err) {
+          // Show error
+          console.error(chalk.red(emoji.get("x"), err.toString()));
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            ` File main.ts is created successfully.`
+          )
+        );
+        objTree["src"]["ts"]["main.ts"] = null;
+      });
+    } else {
+      // Create coffee folder instead of coffeescript
+      fs.mkdirSync(dirsrc + "\\" + data[2]);
+      objTree["src"][data[2]] = {};
+      // Create index.coffee file in coffeescript folder
+      fs.writeFile(
+        dirsrc + "\\" + data[2] + "\\" + `index.coffee`,
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            console.error(chalk.red(emoji.get("x"), err.toString()));
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File main.coffee is created successfully.`
+            )
+          );
+          objTree["src"][data[2]]["main.coffee"] = null;
+        }
+      );
+    }
+  }
+
+  // TODO: Create font folder for store font in future
+  fs.mkdirSync(dirsrc + "\\" + "font");
+  objTree["src"]["font"] = null;
+  // TODO: Create img folder for store img in future
+  fs.mkdirSync(dirsrc + "\\" + "img");
+  objTree["src"]["img"] = null;
+  // TODO: Create lib folder for store lib in future
+  fs.mkdirSync(dirsrc + "\\" + "lib");
+  objTree["src"]["lib"] = null;
+
+  objTree[".gitignore"] = null;
+  objTree["gulpfile.js"] = null;
+  objTree["README.md"] = null;
+  objTree["LICENSE"] = null;
+
   // Delete config file after create success folder
   fs.unlinkSync(dir + "\\" + "generateConfig.txt");
+  setTimeout(
+    function(objTree) {
+      var json = JSON.stringify(objTree);
+      // TODO: Create LICENSE file to show license of open source project in github in future
+      fs.writeFile(dir + "\\" + "genproject.json", json, function(err) {
+        if (err) {
+          console.error(chalk.red(emoji.get("x"), err.toString()));
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            " File genproject.json is created successfully."
+          )
+        );
+      });
+    },
+    1000,
+    objTree
+  );
 }
 
 /**
@@ -359,6 +439,7 @@ function help() {
   console.log("Options:");
   console.log("-h, --help            print this help");
   console.log("-v, --version         print version");
+  console.log("-t, --tree            print directory tree");
   console.log("init [folder name]    create new folder");
   console.log();
 }
