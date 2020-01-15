@@ -41,7 +41,7 @@ if (args.help) {
   help();
 } else if (args.version) {
   // Show version of app
-  console.log("v.1.0.0");
+  console.log("v.1.1.0");
 } else if (args._[0] == "init") {
   /**
    * Check other argument not using --, -
@@ -506,12 +506,12 @@ function makeSrc(data, dir) {
 function help() {
   console.log();
   console.log("Usage:");
-  console.log("  $ gensetup [options]");
+  console.log("  $ gensetup <command>");
   console.log();
   console.log("Options:");
-  console.log("-h, --help            print this help");
-  console.log("-v, --version         print version");
-  console.log("-t, --tree            print directory tree");
-  console.log("init [folder name]    create new folder");
+  console.log("  -h, --help            print this help");
+  console.log("  -v, --version         print version");
+  console.log("  -t, --tree            print directory tree");
+  console.log("  init <folder name>    create new folder");
   console.log();
 }
