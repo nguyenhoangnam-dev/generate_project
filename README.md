@@ -4,15 +4,11 @@
 
 ## Install
 
----
-
 ```bash
 $ npm install @nhn.dev/generate_frontend_project
 ```
 
 ## Usage
-
----
 
 ```bash
 $ gensetup init abc
@@ -21,8 +17,6 @@ $ gensetup init abc
 This will show some preprocessor that app can create
 
 ## Other
-
----
 
 **Show help**
 
