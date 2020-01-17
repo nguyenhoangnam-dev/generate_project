@@ -115,11 +115,21 @@ if (args.help) {
             );
             let obj = JSON.parse(configData);
             license = obj["license"];
-            if (license != "MIT") {
+            if (license != "MIT" && license != "ISC") {
               showError("Invalid license", true);
             } else {
-              let configText =
-                `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
+              let configText;
+              if (license == "ISC") {
+                var name = obj["author"];
+                configText =
+                  `${html} \n` +
+                  `${css} \n` +
+                  `${js} \n` +
+                  `${license}|${name}`;
+              } else {
+                configText =
+                  `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
+              }
 
               // Write to config file and create one
               fs.writeFile(
@@ -136,17 +146,33 @@ if (args.help) {
           } else {
             // showError("It missed gensetup.json", true);
             license = prompt(
-              "License ( " + chalk.underline(" MIT ") + "|" + " none " + " ): "
+              "License ( " +
+                chalk.underline(" MIT ") +
+                "|" +
+                " ISC " +
+                "|" +
+                " none " +
+                " ): "
             );
             if (license == "") {
               license = "MIT";
             }
             // Check if option is existed
-            if (license != "MIT" || license != "none") {
+            if (license != "MIT" && license != "none" && license != "ISC") {
               showError("Invalid license", true);
             } else {
-              let configText =
-                `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
+              let configText;
+              if (license == "ISC") {
+                var name = prompt("Author: ");
+                configText =
+                  `${html} \n` +
+                  `${css} \n` +
+                  `${js} \n` +
+                  `${license}|${name}`;
+              } else {
+                configText =
+                  `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
+              }
 
               // Write to config file and create one
               fs.writeFile(
@@ -212,7 +238,7 @@ function showError(mess, showHelp = false) {
 }
 
 /**
- * Show directory tree using gensetup
+ * Show directory tree using genproject
  */
 function showTree() {
   // Show directory of
@@ -260,6 +286,53 @@ function makeSrc(data, dir) {
     });
   }
 
+  // TODO: Create package.json if it not exist
+  if (!checkError) {
+    if (!fs.existsSync(process.cwd() + "\\" + "package.json")) {
+      let license;
+      if (data[3] == "MIT") {
+        license = "MIT";
+      } else {
+        license = "ISC";
+      }
+      let projectNameObj = process.cwd().split("\\");
+      let projectName = projectNameObj[projectNameObj.length - 1];
+      let samplePacakage = `{
+  "name": "${projectName}",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": ""
+  "license": "${license}",
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-imagemin": "^7.0.0",
+  }
+}`;
+
+      fs.writeFile(dir + "\\" + "package.json", samplePacakage, function(err) {
+        if (err) {
+          //Show error
+          showError(err.toString(), true);
+          checkError = true;
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            " File package.json is created successfully."
+          )
+        );
+      });
+    }
+  }
+
   // TODO: Create README.md file to show in github in future
   if (!checkError) {
     fs.writeFile(dir + "\\" + "README.md", "", function(err) {
@@ -285,8 +358,47 @@ const browserSync = require('browser-sync').create();
 const image = require('gulp-imagemin');
 const htmlReplace = require('gulp-html-replace');
 `;
+    let cssPackage,
+      cssFunction,
+      jsPackage,
+      jsFunction,
+      htmlPackage,
+      htmlFunction,
+      cssWatch,
+      jsWatch,
+      htmlWatch;
 
-    if (data[0] == "none") {
+    switch (data[0]) {
+      case "pug":
+        htmlPackage = `const pug = require('gulp-pug');`;
+        htmlFunction = `function htmlPreprocessor() {
+  return src('./src/pug/*.pug')
+    .pipe(
+      pug({
+        pretty: true
+      })
+    )
+    .pipe(dest('./src'))
+    .pipe(browserSync.stream());
+}`;
+        htmlWatch = `gulp.watch('./src/pug/*.pug', htmlPreprocessor);`;
+        break;
+      case "haml":
+        htmlPackage = `const haml = require('gulp-haml');`;
+        htmlFunction = `function htmlPreprocessor() {
+  return src('./src/haml/*.haml')
+    .pipe(
+      haml()
+    )
+    .pipe(dest('./src'))
+    .pipe(browserSync.stream());
+}`;
+        htmlWatch = `gulp.watch('./src/haml/*.haml', htmlPreprocessor);`;
+        break;
+      case "slim":
+        break;
+      default:
+        break;
     }
     fs.writeFile(dir + "\\" + "gulpfile.js", gulpData, function(err) {
       if (err) {
@@ -304,9 +416,11 @@ const htmlReplace = require('gulp-html-replace');
   }
 
   // TODO: Create LICENSE file to show license of open source project in github in future
-
-  if (!checkError && data[3] == "MIT") {
-    let license = `The MIT License
+  if (!checkError) {
+    let license;
+    if (data[3] != "none") {
+      if (data[3] == "MIT") {
+        license = `The MIT License
 
 Copyright (c)
 
@@ -327,18 +441,36 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.`;
-    fs.writeFile(dir + "\\" + "LICENSE", license, function(err) {
-      if (err) {
-        showError(err.toString(), true);
-        checkError = true;
+      } else {
+        let isc = data[3].split("|");
+        let currentYear = new Date().getFullYear();
+        license = `Copyright ${currentYear} ${isc[1]}
+
+Permission to use, copy, modify, and/or distribute this software for any 
+purpose with or without fee is hereby granted, provided that the above 
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.`;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File LICENSE is created successfully."
-        )
-      );
-    });
+      fs.writeFile(dir + "\\" + "LICENSE", license, function(err) {
+        if (err) {
+          showError(err.toString(), true);
+          checkError = true;
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            " File LICENSE is created successfully."
+          )
+        );
+      });
+    }
   }
 
   // Default folder and file
