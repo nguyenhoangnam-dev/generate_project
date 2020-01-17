@@ -13,7 +13,7 @@
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {
-    "gensetup": "./bin/index.js"
+    "genproject": "./bin/index.js"
   },
   "dependencies": {
     "chalk": "^3.0.0",

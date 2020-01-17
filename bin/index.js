@@ -21,6 +21,10 @@ const emoji = require("node-emoji");
 const treeify = require("treeify");
 
 // Store all kind of preprocessor able to use
+const htmlOption = [chalk.underline("none"), "haml", "pug", "slim"];
+const cssOption = [chalk.underline("none"), "sass", "scss", "stylus", "less"];
+const jsOption = [chalk.underline("none"), "typescript", "coffeescript"];
+
 const htmlPreprocessor = ["none", "haml", "pug", "slim"];
 const cssPreprocessor = ["none", "sass", "scss", "stylus", "less"];
 const jsPreprocessor = ["none", "typescript", "coffeescript"];
@@ -77,51 +81,86 @@ if (args.help) {
   // Check if dirname is existed
   if (!overwrite) {
     // Store html preprocessor option
-    let html = prompt(
-      "HTML preprocessor ( " + htmlPreprocessor.join(" | ") + " ): "
-    );
+    let html = prompt("HTML preprocessor ( " + htmlOption.join(" | ") + " ): ");
     // Check if option is exist
+    if (html == "") {
+      html = "none";
+    }
     if (!htmlPreprocessor.includes(html)) {
-      // Show error
       showError("Invalid html preprocessor type file.", true);
     } else {
       // Store css preprocessor option if html option existed
-      var css = prompt(
-        "CSS preprocessor ( " + cssPreprocessor.join(" | ") + " ): "
-      );
+      var css = prompt("CSS preprocessor ( " + cssOption.join(" | ") + " ): ");
 
+      if (css == "") {
+        css = "none";
+      }
       // Check if option is existed
       if (!cssPreprocessor.includes(css)) {
-        // Show error
         showError("Invalid css preprocessor type file.", true);
       } else {
         // Store js preprocessor option if css option in existed
-        var js = prompt(
-          "JS preprocessor ( " + jsPreprocessor.join(" | ") + " ): "
-        );
-
+        var js = prompt("JS preprocessor ( " + jsOption.join(" | ") + " ): ");
+        if (js == "") {
+          js = "none";
+        }
         // Check if option is existed
         if (!jsPreprocessor.includes(js)) {
-          // show error
-          // console.error(
-          //   chalk.red(emoji.get("x"), " Invalid js preprocessor type file. ")
-
-          // );
           showError("Invalid js preprocessor type file", true);
         } else {
-          // Content of config file
-          let configText = `${html} \n` + `${css} \n` + `${js}`;
+          var license;
+          if (fs.existsSync(process.cwd() + "\\" + "package.json")) {
+            let configData = fs.readFileSync(
+              process.cwd() + "\\" + "package.json"
+            );
+            let obj = JSON.parse(configData);
+            license = obj["license"];
+            if (license != "MIT") {
+              showError("Invalid license", true);
+            } else {
+              let configText =
+                `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
 
-          // Write to config file and create one
-          fs.writeFile(dir + "\\" + "generateConfig.txt", configText, function(
-            err
-          ) {
-            // Show error
-            if (err) {
-              // console.error(chalk.red(emoji.get("x"), err.toString()));
-              showError(err.toString(), true);
+              // Write to config file and create one
+              fs.writeFile(
+                dir + "\\" + "generateConfig.txt",
+                configText,
+                function(err) {
+                  // Show error
+                  if (err) {
+                    showError("Something wrong when read you option", true);
+                  }
+                }
+              );
             }
-          });
+          } else {
+            // showError("It missed gensetup.json", true);
+            license = prompt(
+              "License ( " + chalk.underline(" MIT ") + "|" + " none " + " ): "
+            );
+            if (license == "") {
+              license = "MIT";
+            }
+            // Check if option is existed
+            if (license != "MIT" || license != "none") {
+              showError("Invalid license", true);
+            } else {
+              let configText =
+                `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
+
+              // Write to config file and create one
+              fs.writeFile(
+                dir + "\\" + "generateConfig.txt",
+                configText,
+                function(err) {
+                  // Show error
+                  if (err) {
+                    showError("Something wrong when read you option", true);
+                  }
+                }
+              );
+            }
+          }
         }
       }
     }
@@ -146,8 +185,7 @@ if (args.help) {
         // Create source folder base on data from config file
         makeSrc(dataOption, dir);
       } else {
-        // Show error
-        showError(err.toString(), true);
+        showError("Something wrong when read you option", true);
       }
     });
   }
@@ -156,7 +194,6 @@ if (args.help) {
   showTree();
 } else {
   showError("Can not find this command ", true);
-  // showError(chalk.red(emoji.get("x") + "Can not find this command "), true);
 }
 
 // *********************************************
@@ -167,7 +204,6 @@ if (args.help) {
  * @param {boolean} showHelp This check if we need to show help
  */
 function showError(mess, showHelp = false) {
-  // Show error
   console.error(chalk.red(emoji.get("x") + mess));
   if (showHelp) {
     // Show help screen
@@ -201,6 +237,7 @@ function makeSrc(data, dir) {
 
   // Store directory of src folder
   let dirsrc = path.join(dir, "src");
+  let current = process.cwd();
 
   // Create source folder
   fs.mkdirSync(dirsrc);
@@ -242,7 +279,16 @@ function makeSrc(data, dir) {
 
   // TODO: Create gulpfile.js file to show in github in future
   if (!checkError) {
-    fs.writeFile(dir + "\\" + "gulpfile.js", "", function(err) {
+    let gulpData = `const gulp = require('gulp');
+const { series, parallel, src, dest } = require('gulp');
+const browserSync = require('browser-sync').create();
+const image = require('gulp-imagemin');
+const htmlReplace = require('gulp-html-replace');
+`;
+
+    if (data[0] == "none") {
+    }
+    fs.writeFile(dir + "\\" + "gulpfile.js", gulpData, function(err) {
       if (err) {
         //Show error if can not create file
         showError(err.toString(), true);
@@ -258,8 +304,30 @@ function makeSrc(data, dir) {
   }
 
   // TODO: Create LICENSE file to show license of open source project in github in future
-  if (!checkError) {
-    fs.writeFile(dir + "\\" + "LICENSE", "", function(err) {
+
+  if (!checkError && data[3] == "MIT") {
+    let license = `The MIT License
+
+Copyright (c)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all 
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`;
+    fs.writeFile(dir + "\\" + "LICENSE", license, function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;

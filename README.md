@@ -5,13 +5,13 @@
 ## Install
 
 ```bash
-$ npm install @nhn.dev/generate_frontend_project
+$ npm i -g @nhn.dev/generate_frontend_project
 ```
 
 ## Usage
 
 ```bash
-$ gensetup init abc
+$ genproject init abc
 ```
 
 This will show some preprocessor that app can create
@@ -21,17 +21,17 @@ This will show some preprocessor that app can create
 **Show help**
 
 ```bash
-$ gensetup --help
+$ genproject --help
 ```
 
 **Show version**
 
 ```bash
-$ gensetup --version
+$ genproject --version
 ```
 
 **Show directory tree**
 
 ```bash
-$ gensetup --tree
+$ genproject --tree
 ```
