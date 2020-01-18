@@ -20,6 +20,9 @@ const emoji = require("node-emoji");
 // This turn object to tree
 const treeify = require("treeify");
 
+const ncp = require("ncp").ncp;
+ncp.limit = 16;
+
 const htmlFile = require("./html.js");
 const cssFile = require("./css.js");
 const jsFile = require("./javascript.js");
@@ -663,10 +666,7 @@ function minifyImage() {
       image([
         image.gifsicle({ interlaced: true }),
         image.mozjpeg({quality: 75, progressive: true}),
-        image.optipng({ optimizationLevel: 5 }),
-        image.svgo({
-          plugins: [{ removeViewBox: true }, { cleanupIDs: false }]
-        })
+        image.optipng({ optimizationLevel: 5 })
       ])
     )
     .pipe(
@@ -1063,6 +1063,25 @@ PERFORMANCE OF THIS SOFTWARE.`;
       fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "layout");
       objTree["src"]["scss"]["layout"] = {};
       fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "layout" + "\\" + "_flex." + data[1],
+        cssFile.scss.flex,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _flex.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_flex.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
         dirsrc + "\\" + "scss" + "\\" + "layout" + "\\" + "_header." + data[1],
         cssFile.scss.header,
         function(err) {
@@ -1361,20 +1380,44 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
   // TODO: Create font folder for store font in future
   if (!checkError) {
-    fs.mkdirSync(dirsrc + "\\" + "font");
-    objTree["src"]["font"] = null;
+    ncp(__dirname + "\\" + "font", dirsrc + "\\" + "font", function(err) {
+      if (err) {
+        return console.error(err);
+      }
+      objTree["src"]["font"] = {};
+      objTree["src"]["font"]["FiraCode-Regular.ttf"] = null;
+      objTree["src"]["font"]["Roboto-Bold.ttf"] = null;
+      objTree["src"]["font"]["Roboto-Medium.ttf"] = null;
+      objTree["src"]["font"]["Roboto-Regular.ttf"] = null;
+    });
   }
 
   // TODO: Create img folder for store img in future
   if (!checkError) {
-    fs.mkdirSync(dirsrc + "\\" + "img");
-    objTree["src"]["img"] = null;
+    // fs.mkdirSync(dirsrc + "\\" + "img");
+    // objTree["src"]["img"] = null;
+    ncp(__dirname + "\\" + "img", dirsrc + "\\" + "img", function(err) {
+      if (err) {
+        return console.error(err);
+      }
+      objTree["src"]["img"] = {};
+      objTree["src"]["img"]["header.svg"] = null;
+      objTree["src"]["img"]["section.svg"] = null;
+    });
   }
 
   // TODO: Create lib folder for store lib in future
   if (!checkError) {
-    fs.mkdirSync(dirsrc + "\\" + "lib");
-    objTree["src"]["lib"] = null;
+    // fs.mkdirSync(dirsrc + "\\" + "lib");
+    // objTree["src"]["lib"] = null;
+    ncp(__dirname + "\\" + "lib", dirsrc + "\\" + "lib", function(err) {
+      if (err) {
+        return console.error(err);
+      }
+      objTree["src"]["lib"] = {};
+      objTree["src"]["lib"]["jquery.scrollify.js"] = null;
+      objTree["src"]["lib"]["jquery-3.4.1.min.js"] = null;
+    });
   }
 
   if (!checkError) {

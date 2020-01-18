@@ -57,7 +57,6 @@ let scssFont = `.font {
 
 let scssHeader = `header {
   height: 100%;
-  // background-image: url(../img/header.svg);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -89,7 +88,6 @@ let scssHeader = `header {
 
 let scssSection = `section {
   height: 100%;
-  // background-image: url(../img/section.svg);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -145,7 +143,7 @@ let scssFooter = `footer {
   a {
     color: $color-white;
 
-    font-size: 20px;
+    font-size: 40px;
     line-height: 50px;
   }
 }
@@ -288,6 +286,18 @@ a {
   font-family: "Roboto";
 }
 
+.flex {
+  display: flex;
+}
+
+.flex-vcenter {
+  justify-content: center;
+}
+
+.flex-hcenter {
+  align-items: center;
+}
+
 header {
   height: 100%;
   background-size: cover;
@@ -345,10 +355,22 @@ footer {
 
 .footer a {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 40px;
   line-height: 50px;
 }
 
+`;
+
+let scssFlex = `.flex {
+  display: flex;
+  &-vcenter {
+    justify-content: center;
+  }
+
+  &-hcenter {
+    align-items: center;
+  }
+}
 `;
 
 let css = {
@@ -356,6 +378,7 @@ let css = {
     reset: scssReset,
     typography: scssTypography,
     variables: scssVariable,
+    flex: scssFlex,
     header: scssHeader,
     section: scssSection,
     footer: scssFooter,

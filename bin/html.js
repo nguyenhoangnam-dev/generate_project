@@ -12,7 +12,7 @@ html(lang="en")
     header.flex.flex-vcenter.flex-hcenter.scroll#header
       .header.font-roboto
         .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
-        .header-subtitle.text-center This cli-app use to create front-end project
+        .header-subtitle.text-center This cli-app used to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
       .section-install
         .section-title.font-roboto.text-medium Install
@@ -37,7 +37,7 @@ html(lang="en")
         .section-title.font-roboto.text-medium Help 
         .section-script.font-firacode $ genproject --help
         .section-gif 
-    footer.footer.text-center.scroll
+    footer.flex.flex-hcenter.footer.flex-vcenter.scroll
       a( href='https://github.com/congviec18120062/generate_project') https://github.com/congviec18120062/generate_project
 
 
@@ -62,7 +62,7 @@ let htmlIndex = `<!DOCTYPE html>
     <header class="flex flex-vcenter flex-hcenter scroll" id="header">
       <div class="header font-roboto">
         <div class="header-title text-bold text-center">Generate front-end project <span class="header-version">v2.0.0</span></div>
-        <div class="header-subtitle text-center">This cli-app use to create front-end project</div>
+        <div class="header-subtitle text-center">This cli-app used to create front-end project</div>
       </div>
     </header>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section1">
@@ -99,7 +99,7 @@ let htmlIndex = `<!DOCTYPE html>
         <div class="section-gif"> </div>
       </div>
     </section>
-    <footer class="footer text-center scroll"><a href="https://github.com/congviec18120062/generate_project">https://github.com/congviec18120062/generate_project</a></footer>
+    <footer class="flex flex-hcenter footer flex-vcenter scroll"><a href="https://github.com/congviec18120062/generate_project">https://github.com/congviec18120062/generate_project</a></footer>
     <script src="lib/jquery-3.4.1.min.js"></script>
     <script src="lib/jquery.scrollify.js"></script>
     <!-- build:js-->

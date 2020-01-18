@@ -2,7 +2,7 @@ let jsIndex = `$(document).ready(function() {
   $(function() {
     $.scrollify({
       section: ".scroll",
-      setHeights: false
+      setHeights: true
     });
   });
 
