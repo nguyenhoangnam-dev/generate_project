@@ -20,6 +20,10 @@ const emoji = require("node-emoji");
 // This turn object to tree
 const treeify = require("treeify");
 
+const htmlFile = require("./html.js");
+const cssFile = require("./css.js");
+const jsFile = require("./javascript.js");
+
 // Store all kind of preprocessor able to use
 const htmlOption = [chalk.underline("none"), "haml", "pug", "slim"];
 const cssOption = [chalk.underline("none"), "sass", "scss", "stylus", "less"];
@@ -263,13 +267,16 @@ function makeSrc(data, dir) {
 
   // Store directory of src folder
   let dirsrc = path.join(dir, "src");
+  let dirdocs = path.join(dir, "docs");
   let current = process.cwd();
 
   // Create source folder
   fs.mkdirSync(dirsrc);
+  fs.mkdirSync(dirdocs);
   objTree["src"] = {};
+  objTree["docs"] = null;
 
-  // TODO: Create .gitignore file to ignore git add node_modules in future
+  // TODO: Create .gitignore
   if (!checkError) {
     fs.writeFile(dir + "\\" + ".gitignore", "node_modules", function(err) {
       if (err) {
@@ -288,49 +295,124 @@ function makeSrc(data, dir) {
 
   // TODO: Create package.json if it not exist
   if (!checkError) {
-    if (!fs.existsSync(process.cwd() + "\\" + "package.json")) {
-      let license;
-      if (data[3] == "MIT") {
-        license = "MIT";
+    let license;
+    if (data[3] == "MIT") {
+      license = "MIT";
+    } else {
+      license = "ISC";
+    }
+    let projectNameObj = dir.split("\\");
+    let projectName = projectNameObj[projectNameObj.length - 1];
+    let htmlDependencies, cssDependencies, jsDependencies;
+
+    switch (data[0]) {
+      case "pug":
+        htmlDependencies = `"gulp-pug": "4.0.1"`;
+        break;
+      case "haml":
+        htmlDependencies = `"gulp-haml": "1.0.1"`;
+        break;
+      case "slim":
+        htmlDependencies = `"gulp-slim": "0.3.0"`;
+        break;
+      default:
+        htmlDependencies = ``;
+        break;
+    }
+
+    switch (data[1]) {
+      case "sass":
+        cssDependencies = `"gulp-sass": "4.0.2",
+    "fibers": "4.0.2"`;
+        break;
+      case "scss":
+        cssDependencies = `"gulp-sass": "4.0.2",
+    "fibers": "4.0.2"`;
+        break;
+      case "stylus":
+        cssDependencies = `"gulp-stylus": "2.7.0"`;
+        break;
+      case "less":
+        cssDependencies = `gulp-less": "4.0.1",`;
+        break;
+      default:
+        cssDependencies = ``;
+        break;
+    }
+
+    switch (data[2]) {
+      case "typescript":
+        jsDependencies = `"typescript": "3.7.5",
+    "gulp-typescript": "6.0.0-alpha.1"`;
+        break;
+      case "coffeescript":
+        jsDependencies = `"gulp-coffee": "3.0.3"`;
+        break;
+      default:
+        jsDependencies = ``;
+        break;
+    }
+
+    if (data[0] != "none") {
+      if (data[1] != "none") {
+        htmlDependencies += ",";
+        if (data[2] != "none") {
+          cssDependencies += ",";
+        }
       } else {
-        license = "ISC";
+        if (data[2] != "none") {
+          htmlDependencies += ",";
+        }
       }
-      let projectNameObj = process.cwd().split("\\");
-      let projectName = projectNameObj[projectNameObj.length - 1];
-      let samplePacakage = `{
+    }
+
+    let samplePackage = `{
   "name": "${projectName}",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \\"Error: no test specified\\" && exit 1"
   },
-  "author": ""
+  "author": "",
   "license": "${license}",
   "devDependencies": {
-    "@babel/core": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
-    "browser-sync": "^2.26.7",
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^7.0.1",
-    "gulp-imagemin": "^7.0.0",
+    "@babel/core": "7.8.3",
+    "@babel/preset-env": "7.8.3",
+    "browser-sync": "2.26.7",
+    "gulp": "4.0.2",
+    "gulp-autoprefixer": "7.0.1",
+    "gulp-babel": "8.0.0",
+    "gulp-changed": "4.0.2",
+    "gulp-clean": "0.4.0",
+    "gulp-css-replace-url": "0.2.4",
+    "gulp-csso": "4.0.1",
+    "gulp-html-replace": "1.6.2",
+    "gulp-imagemin": "7.0.0",
+    "gulp-newer": "1.4.0",
+    "gulp-rename": "2.0.0",
+    "gulp-size": "3.0.0",
+    "gulp-sourcemaps": "2.6.5",
+    "gulp-uglify": "3.0.2",
+    "lodash": "4.17.15",
+    "lodash.template": "4.5.0",
+    ${htmlDependencies}${cssDependencies}${jsDependencies}
   }
 }`;
 
-      fs.writeFile(dir + "\\" + "package.json", samplePacakage, function(err) {
-        if (err) {
-          //Show error
-          showError(err.toString(), true);
-          checkError = true;
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            " File package.json is created successfully."
-          )
-        );
-      });
-    }
+    fs.writeFile(dir + "\\" + "package.json", samplePackage, function(err) {
+      if (err) {
+        //Show error
+        showError(err.toString(), true);
+        checkError = true;
+      }
+      console.log(
+        chalk.green(
+          emoji.get("heavy_check_mark"),
+          " File package.json is created successfully."
+        )
+      );
+    });
   }
 
   // TODO: Create README.md file to show in github in future
@@ -350,13 +432,24 @@ function makeSrc(data, dir) {
     });
   }
 
-  // TODO: Create gulpfile.js file to show in github in future
+  // TODO: Create gulpfile.js file
   if (!checkError) {
     let gulpData = `const gulp = require('gulp');
 const { series, parallel, src, dest } = require('gulp');
 const browserSync = require('browser-sync').create();
 const image = require('gulp-imagemin');
 const htmlReplace = require('gulp-html-replace');
+const changed = require('gulp-changed');
+const newer = require('gulp-newer');
+const size = require('gulp-size');
+const babel = require('gulp-babel');
+const uglify = require('gulp-uglify');
+const rename = require('gulp-rename');
+const autoprefixer = require('gulp-autoprefixer');
+const csso = require('gulp-csso');
+const sourcemaps = require('gulp-sourcemaps');
+const clean = require('gulp-clean');
+const urlAdjuster = require('gulp-css-replace-url');
 `;
     let cssPackage,
       cssFunction,
@@ -371,7 +464,9 @@ const htmlReplace = require('gulp-html-replace');
     switch (data[0]) {
       case "pug":
         htmlPackage = `const pug = require('gulp-pug');`;
-        htmlFunction = `function htmlPreprocessor() {
+        htmlFunction = `
+
+function htmlPreprocessor() {
   return src('./src/pug/*.pug')
     .pipe(
       pug({
@@ -381,11 +476,13 @@ const htmlReplace = require('gulp-html-replace');
     .pipe(dest('./src'))
     .pipe(browserSync.stream());
 }`;
-        htmlWatch = `gulp.watch('./src/pug/*.pug', htmlPreprocessor);`;
+        htmlWatch = `  gulp.watch('./src/pug/*.pug', htmlPreprocessor);`;
         break;
       case "haml":
         htmlPackage = `const haml = require('gulp-haml');`;
-        htmlFunction = `function htmlPreprocessor() {
+        htmlFunction = `
+
+function htmlPreprocessor() {
   return src('./src/haml/*.haml')
     .pipe(
       haml()
@@ -393,13 +490,296 @@ const htmlReplace = require('gulp-html-replace');
     .pipe(dest('./src'))
     .pipe(browserSync.stream());
 }`;
-        htmlWatch = `gulp.watch('./src/haml/*.haml', htmlPreprocessor);`;
+        htmlWatch = `  gulp.watch('./src/haml/*.haml', htmlPreprocessor);`;
         break;
       case "slim":
+        htmlPackage = `const slim = require('gulp-slim');`;
+        htmlFunction = `
+
+function htmlPreprocessor() {
+  return src('./src/slim/*.slim')
+    .pipe(
+      slim({
+        pretty: true
+      })
+    )
+    .pipe(dest('./src'))
+    .pipe(browserSync.stream());
+}`;
+        htmlWatch = `  gulp.watch('./src/slim/*.slim', htmlPreprocessor);`;
         break;
       default:
+        htmlPackage = ``;
+        htmlFunction = `
+`;
+        htmlWatch = `  gulp.watch('./src/*.html').on('change', browserSync.reload);`;
         break;
     }
+
+    switch (data[1]) {
+      case "sass":
+        cssPackage = `
+const sass = require('gulp-sass');
+const Fiber = require('fibers');`;
+        cssFunction = `
+
+function cssPreprocessor() {
+  return src('./src/sass/*.sass')
+    .pipe(sourcemaps.init())
+    .pipe(
+      sass({
+        outputStyle: 'expanded',
+        fiber: Fiber,
+        precision: 3,
+        errLogToConsole: true
+      }).on('error', sass.logError)
+    )
+    .pipe(sourcemaps.write('.'))
+    .pipe(dest('./src/css'))
+    .pipe(browserSync.stream());
+}`;
+        cssWatch = `  gulp.watch('./src/sass/**/*.sass', cssPreprocessor);`;
+        break;
+      case "scss":
+        cssPackage = `
+const scss = require('gulp-sass');
+const Fiber = require('fibers');`;
+        cssFunction = `
+
+function cssPreprocessor() {
+  return src('./src/scss/*.scss')
+    .pipe(sourcemaps.init())
+    .pipe(
+      scss({
+        outputStyle: 'expanded',
+        fiber: Fiber,
+        precision: 3,
+        errLogToConsole: true
+      }).on('error', scss.logError)
+    )
+    .pipe(sourcemaps.write('.'))
+    .pipe(dest('./src/css'))
+    .pipe(browserSync.stream());
+}`;
+        cssWatch = `  gulp.watch('./src/scss/**/*.scss', cssPreprocessor);`;
+        break;
+      case "stylus":
+        cssPackage = `
+const stylus = require('gulp-stylus');`;
+        cssFunction = `
+
+function cssPreprocessor() {
+  return src('./src/stylus/**/*.styl')
+    .pipe(sourcemaps.init())
+    .pipe(
+      stylus({
+        compress: true
+      })
+    )
+    .pipe(sourcemaps.write('.'))
+    .pipe(dest('./src/css'))
+    .pipe(browserSync.stream());
+}`;
+        cssWatch = `  gulp.watch('./src/stylus/**/*.styl', cssPreprocessor);`;
+        break;
+      case "less":
+        cssPackage = `
+const less = require('gulp-less');`;
+        cssFunction = `
+
+function cssPreprocessor() {
+  return src('./src/less/**/*.less')
+    .pipe(sourcemaps.init())
+    .pipe(less())
+    .pipe(sourcemaps.write())
+    .pipe(dest('./src/css'))
+    .pipe(browserSync.stream());
+}`;
+        cssWatch = `  gulp.watch('./src/less/**/*.less', cssPreprocessor);`;
+        break;
+      default:
+        cssPackage = ``;
+        cssFunction = ``;
+        cssWatch = `  gulp.watch('./src/*.css').on('change', browserSync.reload);`;
+        break;
+    }
+
+    switch (data[2]) {
+      case "typescript":
+        jsPackage = `
+const ts = require('gulp-typescript');`;
+        jsFunction = `
+function jsPreprocessor() {
+  return src('./src/ts/**/*.ts')
+    .pipe(
+      ts()
+    )
+    .pipe(dest('./src/js'))
+    .pipe(browserSync.stream());
+}`;
+        jsWatch = `  gulp.watch('./src/ts/**/*.ts', jsPreprocessor);`;
+        break;
+      case "coffeescript":
+        jsPackage = `
+const coffee = require('gulp-coffee');`;
+        jsFunction = `
+function jsPreprocessor() {
+  return src('./src/coffeescript/**/*.coffee')
+    .pipe(
+      coffee()
+    )
+    .pipe(dest('./src/js'))
+    .pipe(browserSync.stream());
+}`;
+        jsWatch = `  gulp.watch('./src/coffeescript/**/*.coffee', jsPreprocessor);`;
+        break;
+      default:
+        jsPackage = ``;
+        jsFunction = ``;
+        jsWatch = `  gulp.watch('./js/**/*.js').on('change', browserSync.reload);`;
+        break;
+    }
+
+    let gulpWatch = `
+
+function watch() {
+  browserSync.init({
+    server: {
+      baseDir: './src'
+    }
+  });
+  ${cssWatch}
+  ${htmlWatch}
+  ${jsWatch}
+}`;
+
+    let gulpMinify = `
+
+function minifyImage() {
+  return src(['./src/img/**/*', '!./src/img/desktop.ini'])
+    .pipe(changed('./docs/img'))
+    .pipe(newer('image/'))
+    .pipe(
+      image([
+        image.gifsicle({ interlaced: true }),
+        image.mozjpeg({quality: 75, progressive: true}),
+        image.optipng({ optimizationLevel: 5 }),
+        image.svgo({
+          plugins: [{ removeViewBox: true }, { cleanupIDs: false }]
+        })
+      ])
+    )
+    .pipe(
+      size({
+        showFiles: true
+      })
+    )
+    .pipe(dest('./docs/img'))
+    .pipe(dest('./src/img'));
+}
+
+function minifyJs() {
+  return src('./src/js/**/*.js')
+    .pipe(changed('./docs/js'))
+    .pipe(
+      babel({
+        presets: ['@babel/env']
+      })
+    )
+    .pipe(uglify())
+    .pipe(
+      rename({
+        suffix: '.min'
+      })
+    )
+    .pipe(dest('./docs/js'));
+}
+
+function minifyCss() {
+  return (
+    src(['./src/css/*.css'])
+      .pipe(changed('./docs/css'))
+      .pipe(sourcemaps.init())
+      .pipe(
+        urlAdjuster({
+          replace: ['../../', '../']
+        })
+      )
+      .pipe(autoprefixer())
+      .pipe(csso())
+      .pipe(
+        rename({
+          suffix: '.min'
+        })
+      )
+      .pipe(sourcemaps.write('.'))
+      .pipe(
+        size({
+          showFiles: true
+        })
+      )
+      .pipe(dest('./docs/css'))
+  );
+}
+
+function minifyHtml() {
+  return (
+    src('./src/**/*.html')
+      .pipe(changed('./docs'))
+      .pipe(
+        htmlReplace({
+          css: 'css/main.min.css',
+          js: 'js/index.min.js'
+        })
+      )
+      .pipe(dest('./docs'))
+  );
+}
+
+function fontCopy() {
+  return src('./src/font/*')
+    .pipe(changed('./docs/font'))
+    .pipe(dest('./docs/font'));
+}
+
+function libCopy() {
+  return src('./src/lib/**/*')
+    .pipe(changed('./docs/lib'))
+    .pipe(dest('./docs/lib'));
+}
+
+function cleanDist() {
+  return src('./docs', { read: false }).pipe(clean());
+}
+
+exports.watch = watch;
+exports.minifyImage = minifyImage;
+exports.minifyJs = minifyJs;
+exports.minifyCss = minifyCss;
+exports.minifyHtml = minifyHtml;
+exports.cleanDist = cleanDist;
+exports.default = series(
+  cleanDist,
+  parallel(
+    minifyImage,
+    parallel(
+      minifyJs,
+      parallel(minifyCss, parallel(minifyHtml, parallel(fontCopy, libCopy)))
+    )
+  )
+);`;
+
+    gulpData += htmlPackage;
+    gulpData += cssPackage;
+    gulpData += jsPackage;
+
+    gulpData += htmlFunction;
+    gulpData += cssFunction;
+    gulpData += jsFunction;
+
+    gulpData += gulpWatch;
+    gulpData += gulpMinify;
+
     fs.writeFile(dir + "\\" + "gulpfile.js", gulpData, function(err) {
       if (err) {
         //Show error if can not create file
@@ -482,20 +862,24 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
   // Create main.css file in css folder default
   if (!checkError) {
-    fs.writeFile(dirsrc + "\\" + "css" + "\\" + "main.css", "", function(err) {
-      // Show error
-      if (err) {
-        showError(err.toString(), true);
-        checkError = true;
+    fs.writeFile(
+      dirsrc + "\\" + "css" + "\\" + "main.css",
+      cssFile.none.main,
+      function(err) {
+        // Show error
+        if (err) {
+          showError(err.toString(), true);
+          checkError = true;
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            " File main.css is created successfully."
+          )
+        );
+        objTree["src"]["css"]["main.css"] = null;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File main.css is created successfully."
-        )
-      );
-      objTree["src"]["css"]["main.css"] = null;
-    });
+    );
   }
 
   // Create js folder default
@@ -506,25 +890,31 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
   // Create index.js file in js folder default
   if (!checkError) {
-    fs.writeFile(dirsrc + "\\" + "js" + "\\" + "index.js", "", function(err) {
-      // Show error
-      if (err) {
-        showError(err.toString(), true);
-        checkError = true;
+    fs.writeFile(
+      dirsrc + "\\" + "js" + "\\" + "index.js",
+      jsFile.none.index,
+      function(err) {
+        // Show error
+        if (err) {
+          showError(err.toString(), true);
+          checkError = true;
+        }
+        console.log(
+          chalk.green(
+            emoji.get("heavy_check_mark"),
+            " File index.js is created successfully."
+          )
+        );
+        objTree["src"]["js"]["index.js"] = null;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File index.js is created successfully."
-        )
-      );
-      objTree["src"]["js"]["index.js"] = null;
-    });
+    );
   }
 
   // Create index.html file default
   if (!checkError) {
-    fs.writeFile(dirsrc + "\\" + "index.html", "", function(err) {
+    fs.writeFile(dirsrc + "\\" + "index.html", htmlFile.none.index, function(
+      err
+    ) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
@@ -571,10 +961,341 @@ PERFORMANCE OF THIS SOFTWARE.`;
     fs.mkdirSync(dirsrc + "\\" + data[1]);
     objTree["src"][data[1]] = {};
     // Create file with data type at the end
-    fs.writeFile(
-      dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
-      "",
-      function(err) {
+    if (data[1] == "less") {
+      fs.writeFile(
+        dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File main.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]][`main.${data[1]}`] = null;
+        }
+      );
+    } else if (data[1] == "sass") {
+      fs.writeFile(
+        dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File main.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]][`main.${data[1]}`] = null;
+        }
+      );
+    } else if (data[1] == "scss") {
+      fs.writeFile(
+        dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+        cssFile.scss.main,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File main.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]][`main.${data[1]}`] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "utilities");
+      objTree["src"]["scss"]["utilities"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "utilities" + "\\" + "_font." + data[1],
+        cssFile.scss.font,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _font.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["utilities"]["_font.scss"] = null;
+        }
+      );
+
+      objTree["src"]["scss"]["utilities"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "utilities" + "\\" + "_text." + data[1],
+        cssFile.scss.text,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _text.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["utilities"]["_text.scss"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "layout");
+      objTree["src"]["scss"]["layout"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "layout" + "\\" + "_header." + data[1],
+        cssFile.scss.header,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _header.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_header.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "layout" + "\\" + "_section." + data[1],
+        cssFile.scss.section,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _section.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_section.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "layout" + "\\" + "_footer." + data[1],
+        cssFile.scss.footer,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _footer.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_footer.scss"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "helpers");
+      objTree["src"]["scss"]["helpers"] = {};
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "scss" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_variables." +
+          data[1],
+        cssFile.scss.variables,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _variables.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_variables.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "helpers" + "\\" + "_mixins." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _mixins.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_mixins.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "scss" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_functions." +
+          data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _functions.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_functions.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "scss" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_helpers." +
+          data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _helpers.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_helpers.scss"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "base");
+      objTree["src"]["scss"]["base"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "scss" + "\\" + "base" + "\\" + "_button." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _button.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_button.scss"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "components");
+      objTree["src"]["scss"]["components"] = {};
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "scss" +
+          "\\" +
+          "components" +
+          "\\" +
+          "_reset." +
+          data[1],
+        cssFile.scss.reset,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _reset.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_reset.scss"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "scss" +
+          "\\" +
+          "components" +
+          "\\" +
+          "_typography." +
+          data[1],
+        cssFile.scss.typography,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _typography.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_typography.scss"] = null;
+        }
+      );
+    } else {
+      fs.writeFile(dirsrc + "\\" + data[1] + "\\" + "main.styl", "", function(
+        err
+      ) {
         if (err) {
           // Show error
           showError(err.toString(), true);
@@ -583,12 +1304,12 @@ PERFORMANCE OF THIS SOFTWARE.`;
         console.log(
           chalk.green(
             emoji.get("heavy_check_mark"),
-            ` File main.${data[1]} is created successfully.`
+            ` File main.styl is created successfully.`
           )
         );
-        objTree["src"][data[1]][`main.${data[1]}`] = null;
-      }
-    );
+        objTree["src"][data[1]][`main.styl`] = null;
+      });
+    }
   }
 
   // Check if user contain js preprocessor
@@ -659,6 +1380,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
   if (!checkError) {
     objTree[".gitignore"] = null;
     objTree["gulpfile.js"] = null;
+    objTree["package.json"] = null;
     objTree["README.md"] = null;
     objTree["LICENSE"] = null;
   }
