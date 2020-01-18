@@ -935,24 +935,65 @@ PERFORMANCE OF THIS SOFTWARE.`;
     fs.mkdirSync(dirsrc + "\\" + data[0]);
     objTree["src"][data[0]] = {};
     // Create file with data type at the end
-    fs.writeFile(
-      dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
-      "",
-      function(err) {
-        if (err) {
-          // Show error
-          showError(err.toString(), true);
-          checkError = true;
+
+    if (data[0] == "pug") {
+      fs.writeFile(
+        dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
+        htmlFile.pug.index,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File index.${data[0]} is created successfully.`
+            )
+          );
+          objTree["src"][data[0]][`index.${data[0]}`] = null;
         }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            ` File index.${data[0]} is created successfully.`
-          )
-        );
-        objTree["src"][data[0]][`index.${data[0]}`] = null;
-      }
-    );
+      );
+    } else if (data[0] == "haml") {
+      fs.writeFile(
+        dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
+        htmlFile.haml.index,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File index.${data[0]} is created successfully.`
+            )
+          );
+          objTree["src"][data[0]][`index.${data[0]}`] = null;
+        }
+      );
+    } else {
+      fs.writeFile(
+        dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
+        htmlFile.slim.index,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File index.${data[0]} is created successfully.`
+            )
+          );
+          objTree["src"][data[0]][`index.${data[0]}`] = null;
+        }
+      );
+    }
   }
 
   // Check if user contain css preprocessor
