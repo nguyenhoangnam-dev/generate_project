@@ -13,11 +13,12 @@
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {
-    "gensetup": "./bin/index.js"
+    "genproject": "./bin/index.js"
   },
   "dependencies": {
     "chalk": "^3.0.0",
     "minimist": "^1.2.0",
+    "ncp": "^2.0.0",
     "node-emoji": "^1.10.0",
     "syncprompt": "^2.0.0",
     "treeify": "^1.1.0"
