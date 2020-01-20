@@ -17,6 +17,24 @@ let scssMain = `@import "helpers/variables";
 @import "layout/footer";
 `;
 
+let sassMain = `@import helpers/variables;
+
+@import base/reset
+@import base/typography
+
+@import helpers/functions
+@import helpers/helpers
+@import helpers/mixins
+
+@import utilities/text
+@import utilities/font
+
+@import layout/flex
+@import layout/grid
+@import layout/header
+@import layout/section
+@import layout/footer`;
+
 let scssText = `.text {
   &-center {
     text-align: center;
@@ -44,6 +62,25 @@ let scssText = `.text {
 }
 `;
 
+let sassText = `.text 
+  &-center 
+    text-align: center
+  
+  &-upper 
+    text-transform: uppercase
+  
+  &-italic 
+    font-style: italic
+  
+  &-bold 
+    font-weight: 700
+  
+  &-medium 
+    font-weight: 500
+
+  &-regular 
+    font-weight: 400`;
+
 let scssFont = `.font {
   &-firacode {
     font-family: "Fira Code";
@@ -54,6 +91,13 @@ let scssFont = `.font {
   }
 }
 `;
+
+let sassFont = `.font 
+  &-firacode 
+    font-family: "Fira Code"
+  
+  &-roboto 
+    font-family: "Roboto"`;
 
 let scssHeader = `header {
   height: 100%;
@@ -85,6 +129,28 @@ let scssHeader = `header {
   }
 }
 `;
+
+let sassHeader = `header 
+  height: 100%
+  background-size: cover
+  background-repeat: no-repeat
+
+.header 
+  &-title 
+    font: 
+      size: 60px
+        
+    padding: 
+      left: 80px
+      bottom: 20px
+
+  &-subtitle 
+    font: 
+      size: 30px
+
+  &-version 
+    font: 
+      size: 25px`;
 
 let scssSection = `section {
   height: 100%;
@@ -134,6 +200,47 @@ let scssSection = `section {
 }
 `;
 
+let sassSection = `section 
+  height: 100%
+  background-size: cover
+  background-repeat: no-repeat
+
+.section 
+  &-install,
+  &-usage,
+  &-tree,
+  &-version,
+  &-help 
+    width: 900px
+    height: 200px
+    padding: 
+      top: 40px
+      bottom: 40px
+      left: 40px
+      right: 40px
+  
+  &-title 
+    font: 
+      size: 40px
+    
+    border-bottom: 1px solid $color-black
+    padding: 
+      bottom: 40px
+    
+    margin: 
+      bottom: 30px
+    
+  &-script 
+    font: 
+      size: 25px
+    
+    padding: 
+      top: 20px
+      bottom: 20px
+      left: 20px
+    
+    background-color: $color-gray`;
+
 let scssFooter = `footer {
   height: 50px;
   background-color: $color-black;
@@ -149,9 +256,26 @@ let scssFooter = `footer {
 }
 `;
 
+let sassFooter = `footer 
+  height: 50px
+  background-color: $color-black
+
+.footer 
+  a 
+    color: $color-white
+
+    font-size: 40px
+    line-height: 50px
+`;
+
 let scssVariable = `$color-white: #ffffff;
 $color-black: #000000;
 $color-gray: #f7f7f7;
+`;
+
+let sassVariable = `$color-white: #ffffff
+$color-black: #000000
+$color-gray: #f7f7f7
 `;
 
 let scssTypography = `@font-face {
@@ -183,6 +307,30 @@ let scssTypography = `@font-face {
 }
 `;
 
+let sassTypography = `@font-face 
+  font-family: "Firacode"
+  font-weight: 500
+  font-style: normal
+  src: url("../font/FiraCode-Medium.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 700
+  font-style: normal
+  src: url("../font/Roboto-Bold.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 500
+  font-style: normal
+  src: url("../font/Roboto-Medium.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 400
+  font-style: normal
+  src: url("../font/Roboto-Regular.ttf")`;
+
 let scssReset = `html,
 body {
   margin: 0;
@@ -205,6 +353,26 @@ a {
   text-decoration: none;
 }
 `;
+
+let sassReset = `html,
+body 
+  margin: 0
+  padding: 0
+  width: 100%
+  height: 100%
+  font: 
+    family: "Roboto"
+    weight: regular
+  
+  color: $color-black
+  overflow-x: hidden
+  -webkit-tap-highlight-color: transparent
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+  -webkit-font-smoothing: antialiased
+  position: relative
+
+a 
+  text-decoration: none`;
 
 let cssMain = `html,
 body {
@@ -373,6 +541,15 @@ let scssFlex = `.flex {
 }
 `;
 
+let sassFlex = `.flex 
+  display: flex
+  &-vcenter 
+    justify-content: center
+  
+  &-hcenter 
+    align-items: center
+  `;
+
 let css = {
   scss: {
     reset: scssReset,
@@ -388,6 +565,18 @@ let css = {
   },
   none: {
     main: cssMain
+  },
+  sass: {
+    reset: sassReset,
+    typography: sassTypography,
+    variables: sassVariable,
+    flex: sassFlex,
+    header: sassHeader,
+    section: sassSection,
+    footer: sassFooter,
+    font: sassFont,
+    text: sassText,
+    main: sassMain
   }
 };
 

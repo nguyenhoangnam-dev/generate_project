@@ -259,6 +259,23 @@ function showTree() {
   }
 }
 
+function objectTree(fileName, fileType, err, obj, folderName1) {
+  if (err) {
+    // Show error
+    showError(err.toString(), true);
+    // checkError = true;
+    return true;
+  }
+  console.log(
+    chalk.green(
+      emoji.get("heavy_check_mark"),
+      ` File ${fileName}.${fileType} is created successfully.`
+    )
+  );
+  obj["src"][folderName1][`${fileName}.${fileType}`] = null;
+  return false;
+}
+
 /**
  * Create src folder
  * @param {array} data Save all data type to create folder source
@@ -941,18 +958,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
         htmlFile.pug.index,
         function(err) {
-          if (err) {
-            // Show error
-            showError(err.toString(), true);
-            checkError = true;
-          }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              ` File index.${data[0]} is created successfully.`
-            )
-          );
-          objTree["src"][data[0]][`index.${data[0]}`] = null;
+          checkError = objectTree("index", "pug", err, objTree, "pug");
         }
       );
     } else if (data[0] == "haml") {
@@ -960,18 +966,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
         htmlFile.haml.index,
         function(err) {
-          if (err) {
-            // Show error
-            showError(err.toString(), true);
-            checkError = true;
-          }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              ` File index.${data[0]} is created successfully.`
-            )
-          );
-          objTree["src"][data[0]][`index.${data[0]}`] = null;
+          checkError = objectTree("index", "haml", err, objTree, "haml");
         }
       );
     } else {
@@ -979,18 +974,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         dirsrc + "\\" + data[0] + "\\" + "index." + data[0],
         htmlFile.slim.index,
         function(err) {
-          if (err) {
-            // Show error
-            showError(err.toString(), true);
-            checkError = true;
-          }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              ` File index.${data[0]} is created successfully.`
-            )
-          );
-          objTree["src"][data[0]][`index.${data[0]}`] = null;
+          checkError = objectTree("index", "slim", err, objTree, "slim");
         }
       );
     }
@@ -1007,6 +991,24 @@ PERFORMANCE OF THIS SOFTWARE.`;
         dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
         "",
         function(err) {
+          checkError = objectTree("main", "less", err, objTree, "less");
+        }
+      );
+    } else if (data[1] == "sass") {
+      fs.writeFile(
+        dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+        cssFile.sass.main,
+        function(err) {
+          checkError = objectTree("main", "sass", err, objTree, "sass");
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "utilities");
+      objTree["src"]["sass"]["utilities"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "utilities" + "\\" + "_font." + data[1],
+        cssFile.sass.font,
+        function(err) {
           if (err) {
             // Show error
             showError(err.toString(), true);
@@ -1015,15 +1017,141 @@ PERFORMANCE OF THIS SOFTWARE.`;
           console.log(
             chalk.green(
               emoji.get("heavy_check_mark"),
-              ` File main.${data[1]} is created successfully.`
+              ` File _font.${data[1]} is created successfully.`
             )
           );
-          objTree["src"][data[1]][`main.${data[1]}`] = null;
+          objTree["src"][data[1]]["utilities"]["_font.sass"] = null;
         }
       );
-    } else if (data[1] == "sass") {
+
+      // objTree["src"]["sass"]["utilities"] = {};
       fs.writeFile(
-        dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
+        dirsrc + "\\" + "sass" + "\\" + "utilities" + "\\" + "_text." + data[1],
+        cssFile.sass.text,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _text.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["utilities"]["_text.sass"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "layout");
+      objTree["src"]["sass"]["layout"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "layout" + "\\" + "_flex." + data[1],
+        cssFile.sass.flex,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _flex.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_flex.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "layout" + "\\" + "_header." + data[1],
+        cssFile.sass.header,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _header.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_header.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "layout" + "\\" + "_section." + data[1],
+        cssFile.sass.section,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _section.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_section.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "layout" + "\\" + "_footer." + data[1],
+        cssFile.sass.footer,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _footer.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["_footer.sass"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "helpers");
+      objTree["src"]["sass"]["helpers"] = {};
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "sass" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_variables." +
+          data[1],
+        cssFile.sass.variables,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _variables.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_variables.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "helpers" + "\\" + "_mixins." + data[1],
         "",
         function(err) {
           if (err) {
@@ -1034,10 +1162,137 @@ PERFORMANCE OF THIS SOFTWARE.`;
           console.log(
             chalk.green(
               emoji.get("heavy_check_mark"),
-              ` File main.${data[1]} is created successfully.`
+              ` File _mixins.${data[1]} is created successfully.`
             )
           );
-          objTree["src"][data[1]][`main.${data[1]}`] = null;
+          objTree["src"][data[1]]["helpers"]["_mixins.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "sass" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_functions." +
+          data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _functions.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_functions.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "sass" +
+          "\\" +
+          "helpers" +
+          "\\" +
+          "_helpers." +
+          data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _helpers.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["helpers"]["_helpers.sass"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "base");
+      objTree["src"]["sass"]["base"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "sass" + "\\" + "base" + "\\" + "_button." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _button.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_button.sass"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "components");
+      objTree["src"]["sass"]["components"] = {};
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "sass" +
+          "\\" +
+          "components" +
+          "\\" +
+          "_reset." +
+          data[1],
+        cssFile.sass.reset,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _reset.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_reset.sass"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "sass" +
+          "\\" +
+          "components" +
+          "\\" +
+          "_typography." +
+          data[1],
+        cssFile.sass.typography,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File _typography.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["_typography.sass"] = null;
         }
       );
     } else if (data[1] == "scss") {
@@ -1493,7 +1748,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
           let dirArr = dir.split("\\");
           let folderName = dirArr[dirArr.length - 1];
           console.log(chalk.green("Let go to directory:    cd " + folderName));
-          console.log(chalk.green("Show folder and file:   gensetup -t"));
+          console.log(chalk.green("Show folder and file:   genproject -t"));
           console.log();
           console.log();
         });
