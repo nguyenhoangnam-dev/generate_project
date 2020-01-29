@@ -11,7 +11,6 @@ let scssMain = `@import "helpers/variables";
 @import "utilities/font";
 
 @import "layout/flex";
-@import "layout/grid";
 @import "layout/header";
 @import "layout/section";
 @import "layout/footer";
@@ -30,7 +29,6 @@ let sassMain = `@import helpers/variables;
 @import utilities/font
 
 @import layout/flex
-@import layout/grid
 @import layout/header
 @import layout/section
 @import layout/footer`;
@@ -42,7 +40,6 @@ let lessMain = `@import "base/reset";
 @import "utilities/font";
 
 @import "layout/flex";
-@import "layout/grid";
 @import "layout/header";
 @import "layout/section";
 @import "layout/footer";`;
@@ -149,7 +146,7 @@ let lessFont = `.font {
 `;
 
 let scssHeader = `header {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -157,7 +154,7 @@ let scssHeader = `header {
 .header {
   &-title {
     font: {
-      size: 60px;
+      size: 4vw;
     }
     padding: {
       left: 80px;
@@ -167,27 +164,27 @@ let scssHeader = `header {
 
   &-subtitle {
     font: {
-      size: 30px;
+      size: 2vw;
     }
   }
 
   &-version {
     font: {
-      size: 25px;
+      size: 2.5vw;
     }
   }
 }
 `;
 
 let sassHeader = `header 
-  height: 100%
+  height: 100vh
   background-size: cover
   background-repeat: no-repeat
 
 .header 
   &-title 
     font: 
-      size: 60px
+      size: 4vw
         
     padding: 
       left: 80px
@@ -195,38 +192,37 @@ let sassHeader = `header
 
   &-subtitle 
     font: 
-      size: 30px
+      size: 2vw
 
   &-version 
     font: 
-      size: 25px`;
+      size: 2.5vw`;
 
 let lessHeader = `header {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .header {
   &-title {
-    font-size: 60px;
-
+    font-size: 4vw;
     padding-left: 80px;
     padding-bottom: 20px;
   }
 
   &-subtitle {
-    font-size: 30px;
+    font-size: 2vw;
   }
 
   &-version {
-    font-size: 25px;
+    font-size: 2.5vw;
   }
 }
 `;
 
 let scssSection = `section {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -237,8 +233,8 @@ let scssSection = `section {
   &-tree,
   &-version,
   &-help {
-    width: 900px;
-    height: 200px;
+    width: 50vw;
+    height: 35vh;
     padding: {
       top: 40px;
       bottom: 40px;
@@ -248,20 +244,20 @@ let scssSection = `section {
   }
   &-title {
     font: {
-      size: 40px;
+      size: 2.8vw;
     }
     border-bottom: 1px solid $color-black;
     padding: {
-      bottom: 40px;
+      bottom: 2vw;
     }
     margin: {
-      bottom: 30px;
+      bottom: 2.5vw;
     }
   }
 
   &-script {
     font: {
-      size: 25px;
+      size: 1.8vw;
     }
     padding: {
       top: 20px;
@@ -274,7 +270,7 @@ let scssSection = `section {
 `;
 
 let sassSection = `section 
-  height: 100%
+  height: 100vh
   background-size: cover
   background-repeat: no-repeat
 
@@ -284,8 +280,8 @@ let sassSection = `section
   &-tree,
   &-version,
   &-help 
-    width: 900px
-    height: 200px
+    width: 50vw
+    height: 35vh
     padding: 
       top: 40px
       bottom: 40px
@@ -294,18 +290,18 @@ let sassSection = `section
   
   &-title 
     font: 
-      size: 40px
+      size: 2.8vw
     
     border-bottom: 1px solid $color-black
     padding: 
-      bottom: 40px
+      bottom: 2vw
     
     margin: 
-      bottom: 30px
+      bottom: 2.5vw
     
   &-script 
     font: 
-      size: 25px
+      size: 1.8vw
     
     padding: 
       top: 20px
@@ -318,7 +314,7 @@ let lessSection = `@color-black: #000000;
 @color-gray: #f7f7f7;
 
 section {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -329,22 +325,22 @@ section {
   &-tree,
   &-version,
   &-help {
-    width: 900px;
-    height: 200px;
+    width: 50vw;
+    height: 35vh;
     padding-top: 40px;
     padding-bottom: 40px;
     padding-left: 40px;
     padding-right: 40px;
   }
   &-title {
-    font-size: 40px;
+    font-size: 2.8vw;
     border-bottom: 1px solid @color-black;
-    padding-bottom: 40px;
-    margin-bottom: 30px;
+    padding-bottom: 2vw;
+    margin-bottom: 2.5vw;
   }
 
   &-script {
-    font-size: 25px;
+    font-size: 1.8vw;
     padding-top: 20px;
     padding-bottom: 20px;
     padding-left: 20px;
@@ -354,46 +350,43 @@ section {
 `;
 
 let scssFooter = `footer {
-  height: 50px;
+  height: 100vh;
   background-color: $color-black;
 }
 
 .footer {
   a {
     color: $color-white;
-
-    font-size: 40px;
-    line-height: 50px;
+    font-size: 3vw;
+    line-height: 100vh;
   }
 }
 `;
 
 let sassFooter = `footer 
-  height: 50px
+  height: 100vh
   background-color: $color-black
 
 .footer 
   a 
     color: $color-white
-
-    font-size: 40px
-    line-height: 50px
+    font-size: 3vw
+    line-height: 100vh
 `;
 
 let lessFooter = `@color-white: #ffffff;
 @color-black: #000000;
 
 footer {
-  height: 50px;
+  height: 100vh;
   background-color: @color-black;
 }
 
 .footer {
   a {
     color: @color-white;
-
-    font-size: 40px;
-    line-height: 50px;
+    font-size: 3vw;
+    line-height: 100vh;
   }
 }
 `;
@@ -649,34 +642,34 @@ a {
 }
 
 header {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .header-title {
-  font-size: 60px;
+  font-size: 4vw;
   padding-left: 80px;
   padding-bottom: 20px;
 }
 
 .header-subtitle {
-  font-size: 30px;
+  font-size: 2vw;
 }
 
 .header-version {
-  font-size: 25px;
+  font-size: 2.5vw;
 }
 
 section {
-  height: 100%;
+  height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .section-install, .section-usage, .section-tree, .section-version, .section-help {
-  width: 900px;
-  height: 200px;
+  width: 50vw;
+  height: 35vh;
   padding-top: 40px;
   padding-bottom: 40px;
   padding-left: 40px;
@@ -684,14 +677,14 @@ section {
 }
 
 .section-title {
-  font-size: 40px;
+  font-size: 2.8vw;
   border-bottom: 1px solid #000000;
-  padding-bottom: 40px;
-  margin-bottom: 30px;
+  padding-bottom: 2vw;
+  margin-bottom: 2.5vw;
 }
 
 .section-script {
-  font-size: 25px;
+  font-size: 1.8vw;
   padding-top: 20px;
   padding-bottom: 20px;
   padding-left: 20px;
@@ -699,16 +692,15 @@ section {
 }
 
 footer {
-  height: 50px;
+  height: 100vh;
   background-color: #000000;
 }
 
 .footer a {
   color: #ffffff;
-  font-size: 40px;
-  line-height: 50px;
+  font-size: 3vw;
+  line-height: 100vh;
 }
-
 `;
 
 let scssFlex = `.flex {

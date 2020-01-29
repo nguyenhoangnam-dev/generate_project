@@ -229,22 +229,20 @@ function showTree() {
   }
 }
 
-function objectTree(fileName, fileType, err, obj, folderName1) {
-  if (err) {
-    // Show error
-    showError(err.toString(), true);
-    // checkError = true;
-    return true;
-  }
-  console.log(
-    chalk.green(
-      emoji.get("heavy_check_mark"),
-      ` File ${fileName}.${fileType} is created successfully.`
-    )
-  );
-  obj["src"][folderName1][`${fileName}.${fileType}`] = null;
-  return false;
-}
+// function objectTree(fileName, fileType, err, obj, folderName1) {
+//   if (err) {
+//     showError(err.toString(), true);
+//     return true;
+//   }
+//   console.log(
+//     chalk.green(
+//       emoji.get("heavy_check_mark"),
+//       ` File ${fileName}.${fileType} is created successfully.`
+//     )
+//   );
+//   obj["src"][folderName1][`${fileName}.${fileType}`] = null;
+//   return false;
+// }
 
 var createFile = function(
   dirsrc,
@@ -618,7 +616,7 @@ function cssPreprocessor() {
       default:
         cssPackage = ``;
         cssFunction = ``;
-        cssWatch = `  gulp.watch('./src/*.css').on('change', browserSync.reload);`;
+        cssWatch = `  gulp.watch('./src/css/**/*.css').on('change', browserSync.reload);`;
         break;
     }
 
@@ -654,7 +652,7 @@ function jsPreprocessor() {
       default:
         jsPackage = ``;
         jsFunction = ``;
-        jsWatch = `  gulp.watch('./js/**/*.js').on('change', browserSync.reload);`;
+        jsWatch = `  gulp.watch('./src/js/**/*.js').on('change', browserSync.reload);`;
         break;
     }
 
@@ -1581,8 +1579,24 @@ PERFORMANCE OF THIS SOFTWARE.`;
           console.log();
           let dirArr = dir.split("\\");
           let folderName = dirArr[dirArr.length - 1];
-          console.log(chalk.green("Let go to directory:    cd " + folderName));
-          console.log(chalk.green("Show folder and file:   genproject -t"));
+          console.log(
+            chalk.blue.bold("Run those command line to see sample website")
+          );
+          console.log();
+          console.log(
+            chalk.green.bold(
+              `Let go to directory:                 cd ${folderName}`
+            )
+          );
+          console.log(
+            chalk.yellow("Show folder and file (optional):     genproject -t")
+          );
+          console.log(
+            chalk.green.bold("Install package for gulp:            npm i")
+          );
+          console.log(
+            chalk.green.bold("Run browsersync in gulp:             gulp watch")
+          );
           console.log();
           console.log();
         });

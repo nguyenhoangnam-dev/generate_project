@@ -40,6 +40,8 @@ For a list of all the commands available in the CLI
 $ genproject --help
 ```
 
+![help](./bin/readme/genproject_help.jpg)
+
 **Show version**
 
 For current of CLI app
