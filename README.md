@@ -22,9 +22,11 @@ $ genproject init folder_name
 
 This will show some preprocessor that app can create, none is default option
 
-![genproject](./bin/img/genproject.jpg)
+![genproject](./bin/readme/genproject.jpg)
 
-Then `$ cd` to your new directory and run `npm install` to install all packages for gulp
+Then `$ cd` to your new directory and run `genproject --tree` to see all new file and folder (optional)
+
+Run `npm install` to install all packages for gulp
 
 After npm install successfully, run `gulp watch` to see sample website. Finally, run `gulp` to minify and map css code to docs folder
 
@@ -48,10 +50,10 @@ $ genproject --version
 
 **Show directory tree**
 
-It only working after `$ cd` to new directory
+It only show directory which create by this CLI so it will not update when you create new folder or new file in this directory
 
 ```bash
 $ genproject --tree
 ```
 
-![tree](./bin/img/genproject_tree.jpg)
+![tree](./bin/readme/genproject_tree.jpg)
