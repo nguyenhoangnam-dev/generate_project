@@ -20,7 +20,7 @@ html(lang="en")
     section.flex.flex-vcenter.flex-hcenter.scroll#section2
       .section-usage
         .section-title.font-roboto.text-medium Usage 
-        .section-script.font-firacode $ genproject init folder-name
+        .section-script.font-firacode $ genproject init folder_name
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section3
       .section-tree
@@ -74,7 +74,7 @@ let htmlIndex = `<!DOCTYPE html>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section2">
       <div class="section-usage">
         <div class="section-title font-roboto text-medium">Usage </div>
-        <div class="section-script font-firacode">$ genproject init folder-name</div>
+        <div class="section-script font-firacode">$ genproject init folder_name</div>
         <div class="section-gif"> </div>
       </div>
     </section>
@@ -130,7 +130,7 @@ let hamlIndex = `!!!
     %section.flex.flex-vcenter.flex-hcenter.scroll#section2
       %div.section-usage
         %div.section-title.font-roboto.text-medium Usage 
-        %div.section-script.font-firacode $ genproject init folder-name
+        %div.section-script.font-firacode $ genproject init folder_name
         %div.section-gif 
     %section.flex.flex-vcenter.flex-hcenter.scroll#section3
       %div.section-tree
@@ -178,7 +178,7 @@ html lang="en"
     section.flex.flex-vcenter.flex-hcenter.scroll#section2
       .section-usage
         .section-title.font-roboto.text-medium Usage 
-        .section-script.font-firacode $ genproject init folder-name
+        .section-script.font-firacode $ genproject init folder_name
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section3
       .section-tree
