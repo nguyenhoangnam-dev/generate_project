@@ -353,7 +353,7 @@ function makeSrc(data, dir) {
         cssDependencies = `"gulp-stylus": "2.7.0"`;
         break;
       case "less":
-        cssDependencies = `gulp-less": "4.0.1",`;
+        cssDependencies = `"gulp-less": "4.0.1"`;
         break;
       default:
         cssDependencies = ``;
@@ -989,9 +989,203 @@ PERFORMANCE OF THIS SOFTWARE.`;
     if (data[1] == "less") {
       fs.writeFile(
         dirsrc + "\\" + data[1] + "\\" + "main." + data[1],
-        "",
+        cssFile.less.main,
         function(err) {
           checkError = objectTree("main", "less", err, objTree, "less");
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "utilities");
+      objTree["src"]["less"]["utilities"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "utilities" + "\\" + "font." + data[1],
+        cssFile.less.font,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File font.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["utilities"]["font.less"] = null;
+        }
+      );
+
+      // objTree["src"]["sass"]["utilities"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "utilities" + "\\" + "text." + data[1],
+        cssFile.less.text,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File text.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["utilities"]["text.less"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "layout");
+      objTree["src"]["less"]["layout"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "layout" + "\\" + "flex." + data[1],
+        cssFile.less.flex,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File flex.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["flex.less"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "layout" + "\\" + "header." + data[1],
+        cssFile.less.header,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File header.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["header.less"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "layout" + "\\" + "section." + data[1],
+        cssFile.less.section,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File section.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["section.less"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "layout" + "\\" + "footer." + data[1],
+        cssFile.less.footer,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File footer.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["layout"]["footer.less"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "base");
+      objTree["src"]["less"]["base"] = {};
+      fs.writeFile(
+        dirsrc + "\\" + "less" + "\\" + "base" + "\\" + "button." + data[1],
+        "",
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File button.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["button.less"] = null;
+        }
+      );
+
+      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "components");
+      objTree["src"]["less"]["components"] = {};
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "less" +
+          "\\" +
+          "components" +
+          "\\" +
+          "reset." +
+          data[1],
+        cssFile.less.reset,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File reset.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["reset.less"] = null;
+        }
+      );
+
+      fs.writeFile(
+        dirsrc +
+          "\\" +
+          "less" +
+          "\\" +
+          "components" +
+          "\\" +
+          "typography." +
+          data[1],
+        cssFile.sass.typography,
+        function(err) {
+          if (err) {
+            // Show error
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              ` File typography.${data[1]} is created successfully.`
+            )
+          );
+          objTree["src"][data[1]]["base"]["typography.less"] = null;
         }
       );
     } else if (data[1] == "sass") {
@@ -1635,20 +1829,24 @@ PERFORMANCE OF THIS SOFTWARE.`;
       fs.mkdirSync(dirsrc + "\\" + "ts");
       objTree["src"]["ts"] = {};
       // Create index.ts file in ts folder
-      fs.writeFile(dirsrc + "\\" + "ts" + "\\" + `index.ts`, "", function(err) {
-        if (err) {
+      fs.writeFile(
+        dirsrc + "\\" + "ts" + "\\" + "index.ts",
+        jsFile.typescript.index,
+        function(err) {
           // Show error
-          showError(err.toString(), true);
-          checkError = true;
+          if (err) {
+            showError(err.toString(), true);
+            checkError = true;
+          }
+          console.log(
+            chalk.green(
+              emoji.get("heavy_check_mark"),
+              " File index.ts is created successfully."
+            )
+          );
+          objTree["src"]["ts"]["index.ts"] = null;
         }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            ` File main.ts is created successfully.`
-          )
-        );
-        objTree["src"]["ts"]["main.ts"] = null;
-      });
+      );
     } else {
       // Create coffee folder instead of coffeescript
       fs.mkdirSync(dirsrc + "\\" + data[2]);
@@ -1656,7 +1854,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
       // Create index.coffee file in coffeescript folder
       fs.writeFile(
         dirsrc + "\\" + data[2] + "\\" + `index.coffee`,
-        "",
+        jsFile.coffeescript.index,
         function(err) {
           if (err) {
             // Show error
@@ -1665,10 +1863,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
           console.log(
             chalk.green(
               emoji.get("heavy_check_mark"),
-              ` File main.coffee is created successfully.`
+              ` File index.coffee is created successfully.`
             )
           );
-          objTree["src"][data[2]]["main.coffee"] = null;
+          objTree["src"][data[2]]["index.coffee"] = null;
         }
       );
     }
