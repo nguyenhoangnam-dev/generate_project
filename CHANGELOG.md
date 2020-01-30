@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2020-01-29
+
+### Added
+
+- Add content to Less, Typescript, Coffeescript.
+- Add emoji in commit message.
+- Add detail to README.
+- Add new image to README.
+
+### Changed
+
+\_ Change px to vw, vh in css file.
+
+### Fixed
+
+- Fix gulpfile.js not watch JS, CSS, HTML file.
+- Fix responsive in sample website.
+
 ## [2.0.0] - 2020-01-17
 
 ### Added
@@ -21,10 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 \_ Change gensetup to genproject.
-
-### Removed
-
-- Section about "changelog" vs "CHANGELOG".
 
 ## [1.1.1] - 2020-01-15
 
