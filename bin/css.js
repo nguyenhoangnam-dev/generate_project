@@ -13,8 +13,7 @@ let scssMain = `@import "helpers/variables";
 @import "layout/flex";
 @import "layout/header";
 @import "layout/section";
-@import "layout/footer";
-`;
+@import "layout/footer";`;
 
 let sassMain = `@import helpers/variables;
 
@@ -44,6 +43,23 @@ let lessMain = `@import "base/reset";
 @import "layout/section";
 @import "layout/footer";`;
 
+let stylusMain = `@import "helpers/variables"
+
+@import "base/reset"
+@import "base/typography"
+
+@import "helpers/functions"
+@import "helpers/helpers"
+@import "helpers/mixins"
+
+@import "utilities/text"
+@import "utilities/font"
+
+@import "layout/flex"
+@import "layout/header"
+@import "layout/section"
+@import "layout/footer"`;
+
 let scssText = `.text {
   &-center {
     text-align: center;
@@ -68,8 +84,7 @@ let scssText = `.text {
   &-regular {
     font-weight: 400;
   }
-}
-`;
+}`;
 
 let sassText = `.text 
   &-center 
@@ -116,6 +131,24 @@ let lessText = `.text {
   }
 }`;
 
+let stylusText = `.text-center 
+  text-align: center
+
+.text-upper 
+  text-transform: uppercase
+
+.text-italic 
+  font-style: italic
+
+.text-bold 
+  font-weight: 700
+
+.text-medium 
+  font-weight: 500
+
+.text-regular 
+  font-weight: 400`;
+
 let scssFont = `.font {
   &-firacode {
     font-family: "Fira Code";
@@ -124,8 +157,7 @@ let scssFont = `.font {
   &-roboto {
     font-family: "Roboto";
   }
-}
-`;
+}`;
 
 let sassFont = `.font 
   &-firacode 
@@ -142,8 +174,13 @@ let lessFont = `.font {
   &-roboto {
     font-family: "Roboto";
   }
-}
-`;
+}`;
+
+let stylusFont = `.font-firacode 
+  font-family: "Fira Code";
+
+.font-roboto
+  font-family: "Roboto"`;
 
 let scssHeader = `header {
   height: 100vh;
@@ -173,8 +210,7 @@ let scssHeader = `header {
       size: 2.5vw;
     }
   }
-}
-`;
+}`;
 
 let sassHeader = `header 
   height: 100vh
@@ -218,7 +254,23 @@ let lessHeader = `header {
   &-version {
     font-size: 2.5vw;
   }
-}
+}`;
+
+let stylusHeader = `header 
+  height: 100vh
+  background-size: cover
+  background-repeat: no-repeat
+
+.header-title 
+  font-size: 4vw
+  padding-left: 80px
+  padding-bottom: 20px
+
+.header-subtitle 
+  font-size: 2vw
+
+.header-version 
+  font-size: 2.5vw
 `;
 
 let scssSection = `section {
@@ -228,20 +280,15 @@ let scssSection = `section {
 }
 
 .section {
-  &-install,
-  &-usage,
-  &-tree,
-  &-version,
-  &-help {
-    width: 50vw;
-    height: 35vh;
-    padding: {
-      top: 40px;
-      bottom: 40px;
-      left: 40px;
-      right: 40px;
-    }
+  width: 50vw;
+  height: 35vh;
+  padding: {
+    top: 40px;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
   }
+
   &-title {
     font: {
       size: 2.8vw;
@@ -266,48 +313,38 @@ let scssSection = `section {
     }
     background-color: $color-gray;
   }
-}
-`;
+}`;
 
 let sassSection = `section 
   height: 100vh
   background-size: cover
   background-repeat: no-repeat
 
-.section 
-  &-install,
-  &-usage,
-  &-tree,
-  &-version,
-  &-help 
-    width: 50vw
-    height: 35vh
-    padding: 
-      top: 40px
-      bottom: 40px
-      left: 40px
-      right: 40px
+.section  
+  width: 50vw
+  height: 35vh
+  padding: 
+    top: 40px
+    bottom: 40px
+    left: 40px
+    right: 40px
   
   &-title 
     font: 
       size: 2.8vw
-    
     border-bottom: 1px solid $color-black
     padding: 
       bottom: 2vw
-    
     margin: 
       bottom: 2.5vw
     
   &-script 
     font: 
       size: 1.8vw
-    
     padding: 
       top: 20px
       bottom: 20px
       left: 20px
-    
     background-color: $color-gray`;
 
 let lessSection = `@color-black: #000000;
@@ -320,18 +357,13 @@ section {
 }
 
 .section {
-  &-install,
-  &-usage,
-  &-tree,
-  &-version,
-  &-help {
-    width: 50vw;
-    height: 35vh;
-    padding-top: 40px;
-    padding-bottom: 40px;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+  width: 50vw;
+  height: 35vh;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  padding-left: 40px;
+  padding-right: 40px;
+  
   &-title {
     font-size: 2.8vw;
     border-bottom: 1px solid @color-black;
@@ -346,8 +378,33 @@ section {
     padding-left: 20px;
     background-color: @color-gray;
   }
-}
-`;
+}`;
+
+let stylusSection = `section 
+  height: 100vh
+  background-size: cover
+  background-repeat: no-repeat
+
+.section
+  width: 50vw
+  height: 35vh
+  padding-top: 40px
+  padding-bottom: 40px
+  padding-left: 40px
+  padding-right: 40px
+
+.section-title 
+  font-size: 2.8vw
+  border-bottom: 1px solid color-black
+  padding-bottom: 2vw
+  margin-bottom: 2.5vw
+
+.section-script 
+  font-size: 1.8vw
+  padding-top: 20px
+  padding-bottom: 20px
+  padding-left: 20px
+  background-color: color-gray`;
 
 let scssFooter = `footer {
   height: 100vh;
@@ -360,8 +417,7 @@ let scssFooter = `footer {
     font-size: 3vw;
     line-height: 100vh;
   }
-}
-`;
+}`;
 
 let sassFooter = `footer 
   height: 100vh
@@ -371,8 +427,7 @@ let sassFooter = `footer
   a 
     color: $color-white
     font-size: 3vw
-    line-height: 100vh
-`;
+    line-height: 100vh`;
 
 let lessFooter = `@color-white: #ffffff;
 @color-black: #000000;
@@ -388,8 +443,17 @@ footer {
     font-size: 3vw;
     line-height: 100vh;
   }
-}
-`;
+}`;
+
+let stylusFooter = `footer
+  height: 50px
+  background-color: color-black
+
+.footer 
+  a 
+    color: $color-white
+    font-size: 40px
+    line-height: 50px`;
 
 let scssVariable = `$color-white: #ffffff;
 $color-black: #000000;
@@ -400,6 +464,10 @@ let sassVariable = `$color-white: #ffffff
 $color-black: #000000
 $color-gray: #f7f7f7
 `;
+
+let stylusVariable = `color-white= #ffffff
+color-black= #000000
+color-gray= #f7f7f7`;
 
 let scssTypography = `@font-face {
   font-family: "Firacode";
@@ -427,8 +495,7 @@ let scssTypography = `@font-face {
   font-weight: 400;
   font-style: normal;
   src: url("../font/Roboto-Regular.ttf");
-}
-`;
+}`;
 
 let sassTypography = `@font-face 
   font-family: "Firacode"
@@ -480,8 +547,31 @@ let lessTypography = `@font-face {
   font-weight: 400;
   font-style: normal;
   src: url("../font/Roboto-Regular.ttf");
-}
-`;
+}`;
+
+let stylusTypography = `@font-face 
+  font-family: "Firacode"
+  font-weight: 500
+  font-style: normal
+  src: url("../font/FiraCode-Medium.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 700
+  font-style: normal
+  src: url("../font/Roboto-Bold.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 500
+  font-style: normal
+  src: url("../font/Roboto-Medium.ttf")
+
+@font-face 
+  font-family: "Roboto"
+  font-weight: 400
+  font-style: normal
+  src: url("../font/Roboto-Regular.ttf")`;
 
 let scssReset = `html,
 body {
@@ -503,8 +593,7 @@ body {
 
 a {
   text-decoration: none;
-}
-`;
+}`;
 
 let sassReset = `html,
 body 
@@ -546,8 +635,25 @@ body {
 
 a {
   text-decoration: none;
-}
-`;
+}`;
+
+let stylusReset = `html,
+body 
+  margin: 0
+  padding: 0
+  width: 100%
+  height: 100%
+  font-family: "Roboto"
+  font-weight: regular
+  color: color-black
+  overflow-x: hidden
+  -webkit-tap-highlight-color: transparent
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+  -webkit-font-smoothing: antialiased
+  position: relative
+
+a 
+  text-decoration: none`;
 
 let cssMain = `html,
 body {
@@ -712,8 +818,11 @@ let scssFlex = `.flex {
   &-hcenter {
     align-items: center;
   }
-}
-`;
+
+  &-column {
+    flex-direction: column;
+  }
+}`;
 
 let sassFlex = `.flex 
   display: flex
@@ -722,6 +831,9 @@ let sassFlex = `.flex
   
   &-hcenter 
     align-items: center
+
+  &-column 
+    flex-direction: column
   `;
 
 let lessFlex = `.flex {
@@ -733,8 +845,23 @@ let lessFlex = `.flex {
   &-hcenter {
     align-items: center;
   }
-}
-`;
+
+  &-column {
+    flex-direction: column;
+  }
+}`;
+
+let stylusFlex = `.flex 
+  display: flex
+
+.flex-vcenter 
+  justify-content: center
+
+.flex-hcenter 
+  align-items: center
+
+.flex-column 
+  flex-direction: column`;
 
 let css = {
   scss: {
@@ -774,6 +901,18 @@ let css = {
     font: lessFont,
     text: lessText,
     main: lessMain
+  },
+  stylus: {
+    reset: stylusReset,
+    typography: stylusTypography,
+    variables: stylusVariable,
+    flex: stylusFlex,
+    header: stylusHeader,
+    section: stylusSection,
+    footer: stylusFooter,
+    font: stylusFont,
+    text: stylusText,
+    main: stylusMain
   }
 };
 

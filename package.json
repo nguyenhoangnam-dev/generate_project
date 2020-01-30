@@ -10,6 +10,15 @@
     "type": "git",
     "url": "https://github.com/congviec18120062/generate_project.git"
   },
+  "keywords": [
+    "cli",
+    "app",
+    "command-line",
+    "generate",
+    "frontend",
+    "options",
+    "gulp"
+  ],
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {

@@ -1467,10 +1467,189 @@ PERFORMANCE OF THIS SOFTWARE.`;
         objTree["src"]["scss"]["base"]["_typography.scss"] = null;
       }
     } else {
-      checkError = createFile(dirsrc, "main.styl", "", "stylus", "");
+      let stylusFile = cssFile.stylus;
+
+      checkError = createFile(
+        dirsrc,
+        "main.styl",
+        "",
+        "stylus",
+        stylusFile.main
+      );
 
       if (!checkError) {
         objTree["src"]["stylus"]["main.styl"] = null;
+      }
+
+      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "utilities");
+      objTree["src"]["stylus"]["utilities"] = {};
+
+      checkError = createFile(
+        dirsrc,
+        "_font.styl",
+        "utilities\\",
+        "stylus",
+        stylusFile.font
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["utilities"]["_font.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_text.styl",
+        "utilities\\",
+        "stylus",
+        stylusFile.text
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["utilities"]["_text.styl"] = null;
+      }
+
+      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "layout");
+      objTree["src"]["stylus"]["layout"] = {};
+
+      checkError = createFile(
+        dirsrc,
+        "_flex.styl",
+        "layout\\",
+        "stylus",
+        stylusFile.flex
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["layout"]["_flex.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_header.styl",
+        "layout\\",
+        "stylus",
+        stylusFile.header
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["layout"]["_header.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_section.styl",
+        "layout\\",
+        "stylus",
+        stylusFile.section
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["layout"]["_section.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_footer.styl",
+        "layout\\",
+        "stylus",
+        stylusFile.footer
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["layout"]["_footer.styl"] = null;
+      }
+
+      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "helpers");
+      objTree["src"]["stylus"]["helpers"] = {};
+
+      checkError = createFile(
+        dirsrc,
+        "_variables.styl",
+        "helpers\\",
+        "stylus",
+        stylusFile.variables
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["helpers"]["_variables.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_mixins.styl",
+        "helpers\\",
+        "stylus",
+        stylusFile.mixins
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["helpers"]["_mixins.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_functions.styl",
+        "helpers\\",
+        "stylus",
+        stylusFile.functions
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["helpers"]["_functions.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_helpers.styl",
+        "helpers\\",
+        "stylus",
+        stylusFile.helpers
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["helpers"]["_helpers.styl"] = null;
+      }
+
+      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "components");
+      objTree["src"]["stylus"]["components"] = {};
+
+      checkError = createFile(
+        dirsrc,
+        "_button.styl",
+        "components\\",
+        "stylus",
+        stylusFile.button
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["components"]["_button.styl"] = null;
+      }
+
+      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "base");
+      objTree["src"]["stylus"]["base"] = {};
+
+      checkError = createFile(
+        dirsrc,
+        "_reset.styl",
+        "base\\",
+        "stylus",
+        stylusFile.reset
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["base"]["_reset.styl"] = null;
+      }
+
+      checkError = createFile(
+        dirsrc,
+        "_typography.styl",
+        "base\\",
+        "stylus",
+        stylusFile.typography
+      );
+
+      if (!checkError) {
+        objTree["src"]["stylus"]["base"]["_typography.styl"] = null;
       }
     }
   }
