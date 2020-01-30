@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] -
+
+### Added
+
+- Add package manager option [npm, yarn]
+- Add spin animation.
+
+### Fixed
+
+- Path of header.svg and section.svg when build in docs
+
+## [2.2.0] - 2020-01-30
+
+### Added
+
+- Add keyword to npm package.
+- Add package.js, license.js, task.js
+- Add content to Stylus
+- Add -r, --remove command to make project without sample
+- Add license, package, task file to contain data and export to index.js
+
+### Remove
+
+- Remove readme folder and contain image in github
+
 ## [2.1.0] - 2020-01-29
 
 ### Added

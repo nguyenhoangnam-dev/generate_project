@@ -1,4 +1,4 @@
-# Generate front-end project (2.1.0)
+# Generate front-end project (2.2.0)
 
 > This cli-app use to create front-end project base on preprocessor option and use gulp to run their
 
@@ -22,13 +22,25 @@ $ genproject init folder_name
 
 This will show some preprocessor that app can create, none is default option
 
-![genproject](./bin/readme/genproject.jpg)
+![genproject](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genproject.jpg)
 
 Then `$ cd` to your new directory and run `genproject --tree` to see all new file and folder (optional)
 
 Run `npm install` to install all packages for gulp
 
 After npm install successfully, run `gulp watch` to see sample website. Finally, run `gulp` to minify and map css code to docs folder
+
+If sample project run successfully you will see something like this:
+
+![genproject sample](https://github.com/congviec18120062/store_data/blob/master/genproject/genproject_sample_demo.gif?raw=true)
+
+**Options**
+
+Create project without sample project
+
+```bash
+$ genproject init folder_name -r
+```
 
 ## Other
 
@@ -40,7 +52,7 @@ For a list of all the commands available in the CLI
 $ genproject --help
 ```
 
-![help](./bin/readme/genproject_help.jpg)
+![help](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genproject_help.jpg)
 
 **Show version**
 
@@ -58,4 +70,4 @@ It only show directory which create by this CLI so it will not update when you c
 $ genproject --tree
 ```
 
-![tree](./bin/readme/genproject_tree.jpg)
+![tree](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genproject_tree.jpg)

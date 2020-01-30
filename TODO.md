@@ -4,8 +4,12 @@
 
 - [ ] install to change structure of project
 - [ ] new to create new structure of project
+- [x] --tree to show file which CLI was created
+- [x] --remove to create project without sample
 
 ### Other todos:
 
-- [ ] Finish gulpfile.js content
-- [ ] Publish 1.2.0 to npm package
+- [x] Finish gulpfile.js content
+- [x] Finish sample project
+- [ ] Options yarn and npm
+- [ ] Options gulp and grunt
