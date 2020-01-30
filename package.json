@@ -1,6 +1,6 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "This cli-app use to create front-end project base on preprocessor option and use gulp to run their",
   "main": "bin/index.js",
   "scripts": {
