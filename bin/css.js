@@ -747,6 +747,10 @@ a {
   align-items: center;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
 header {
   height: 100vh;
   background-size: cover;
@@ -773,7 +777,7 @@ section {
   background-repeat: no-repeat;
 }
 
-.section-install, .section-usage, .section-tree, .section-version, .section-help {
+.section {
   width: 50vw;
   height: 35vh;
   padding-top: 40px;
@@ -806,8 +810,7 @@ footer {
   color: #ffffff;
   font-size: 3vw;
   line-height: 100vh;
-}
-`;
+}`;
 
 let scssFlex = `.flex {
   display: flex;
