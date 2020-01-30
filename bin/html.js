@@ -14,26 +14,26 @@ html(lang="en")
         .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
         .header-subtitle.text-center This cli-app used to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
-      .section-install
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Install
         .section-script.font-firacode $ npm install --global @nhn.dev/generate_frontend_project
     section.flex.flex-vcenter.flex-hcenter.scroll#section2
-      .section-usage
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Usage 
         .section-script.font-firacode $ genproject init folder_name
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section3
-      .section-tree
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Tree 
         .section-script.font-firacode $ genproject --tree 
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section4
-      .section-version
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Version 
         .section-script.font-firacode $ genproject --version 
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section5 
-      .section-help
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Help 
         .section-script.font-firacode $ genproject --help
         .section-gif 
@@ -66,34 +66,34 @@ let htmlIndex = `<!DOCTYPE html>
       </div>
     </header>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section1">
-      <div class="section-install">
+      <div class="section flex flex-vcenter flex-column">
         <div class="section-title font-roboto text-medium">Install</div>
         <div class="section-script font-firacode">$ npm install --global @nhn.dev/generate_frontend_project</div>
       </div>
     </section>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section2">
-      <div class="section-usage">
+      <div class="section flex flex-vcenter flex-column">
         <div class="section-title font-roboto text-medium">Usage </div>
         <div class="section-script font-firacode">$ genproject init folder_name</div>
         <div class="section-gif"> </div>
       </div>
     </section>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section3">
-      <div class="section-tree">
+      <div class="section flex flex-vcenter flex-column">
         <div class="section-title font-roboto text-medium">Tree </div>
         <div class="section-script font-firacode">$ genproject --tree </div>
         <div class="section-gif"> </div>
       </div>
     </section>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section4">
-      <div class="section-version">
+      <div class="section flex flex-vcenter flex-column">
         <div class="section-title font-roboto text-medium">Version </div>
         <div class="section-script font-firacode">$ genproject --version </div>
         <div class="section-gif"> </div>
       </div>
     </section>
     <section class="flex flex-vcenter flex-hcenter scroll" id="section5"> 
-      <div class="section-help">
+      <div class="section flex flex-vcenter flex-column">
         <div class="section-title font-roboto text-medium">Help </div>
         <div class="section-script font-firacode">$ genproject --help</div>
         <div class="section-gif"> </div>
@@ -124,26 +124,26 @@ let hamlIndex = `!!!
         %div.header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
         %div.header-subtitle.text-center This cli-app use to create front-end project
     %section.flex.flex-vcenter.flex-hcenter.scroll#section1
-      %div.section-install
+      %div.section.flex.flex-vcenter.flex-column
         %div.section-title.font-roboto.text-medium Install
         %div.section-script.font-firacode $ npm install --global @nhn.dev/generate_frontend_project
     %section.flex.flex-vcenter.flex-hcenter.scroll#section2
-      %div.section-usage
+      %div.section.flex.flex-vcenter.flex-column
         %div.section-title.font-roboto.text-medium Usage 
         %div.section-script.font-firacode $ genproject init folder_name
         %div.section-gif 
     %section.flex.flex-vcenter.flex-hcenter.scroll#section3
-      %div.section-tree
+      %div.section.flex.flex-vcenter.flex-column
         %div.section-title.font-roboto.text-medium Tree 
         %div.section-script.font-firacode $ genproject --tree 
         %div.section-gif 
     %section.flex.flex-vcenter.flex-hcenter.scroll#section4
-      %div.section-version
+      %div.section.flex.flex-vcenter.flex-column
         %div.section-title.font-roboto.text-medium Version 
         %div.section-script.font-firacode $ genproject --version 
         %div.section-gif 
     %section.flex.flex-vcenter.flex-hcenter.scroll#section5 
-      %div.section-help
+      %div.section.flex.flex-vcenter.flex-column
         %div.section-title.font-roboto.text-medium Help 
         %div.section-script.font-firacode $ genproject --help
         %div.section-gif 
@@ -172,26 +172,26 @@ html lang="en"
         .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
         .header-subtitle.text-center This cli-app use to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
-      .section-install
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Install
         .section-script.font-firacode $ npm install --global @nhn.dev/generate_frontend_project
     section.flex.flex-vcenter.flex-hcenter.scroll#section2
-      .section-usage
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Usage 
         .section-script.font-firacode $ genproject init folder_name
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section3
-      .section-tree
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Tree 
         .section-script.font-firacode $ genproject --tree 
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section4
-      .section-version
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Version 
         .section-script.font-firacode $ genproject --version 
         .section-gif 
     section.flex.flex-vcenter.flex-hcenter.scroll#section5 
-      .section-help
+      .section.flex.flex-vcenter.flex-column
         .section-title.font-roboto.text-medium Help 
         .section-script.font-firacode $ genproject --help
         .section-gif 

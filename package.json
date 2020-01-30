@@ -1,6 +1,6 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "This cli-app use to create front-end project base on preprocessor option and use gulp to run their",
   "main": "bin/index.js",
   "scripts": {
@@ -10,6 +10,15 @@
     "type": "git",
     "url": "https://github.com/congviec18120062/generate_project.git"
   },
+  "keywords": [
+    "cli",
+    "app",
+    "command-line",
+    "generate",
+    "frontend",
+    "options",
+    "gulp"
+  ],
   "author": "nguyen hoang nam",
   "license": "MIT",
   "bin": {
