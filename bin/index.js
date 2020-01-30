@@ -14,6 +14,9 @@ ncp.limit = 16;
 let htmlFile = require("./html.js"); // Data of all html preprocessor code
 let cssFile = require("./css.js"); // Data of all css preprocessor code
 let jsFile = require("./javascript.js"); // Data of all js preprocessor code
+let licenseFile = require("./license.js");
+let taskFile = require("./task.js");
+let packageFile = require("./package.js");
 
 // Store all kind of preprocessor able to use
 const htmlOption = [chalk.underline("none"), "haml", "pug", "slim"];
@@ -43,53 +46,44 @@ if (args.help) {
   let overwrite = false; // Check if folder name is existed in this directory
   if (args._[1]) {
     // Check if dirname is existed
-    if (!fs.existsSync(dir + "\\" + args._[1])) {
-      dir = dir + "\\" + args._[1]; // Change dir to new directory
+    if (!fs.existsSync(`{dir}\\{args._[1]}`)) {
+      dir = `${dir}\\${args._[1]}`; // Change dir to new directory
     } else {
       overwrite = true;
       console.error(
         chalk.yellow(emoji.get("no_entry"), "This file name is exist !")
       );
     }
-    if (!overwrite) {
-      fs.mkdirSync(dir); // Create new project folder
-    }
+    if (!overwrite) fs.mkdirSync(dir); // Create new project folder
   }
 
   if (!overwrite) {
     // Store html preprocessor option
     let html = prompt("HTML preprocessor ( " + htmlOption.join(" | ") + " ): ");
     // Check if option is exist
-    if (html == "") {
-      html = "none";
-    }
+    if (html == "") html = "none";
+
     if (!htmlPreprocessor.includes(html)) {
       showError("Invalid html preprocessor type file.", true);
     } else {
       // Store css preprocessor option if html option existed
       var css = prompt("CSS preprocessor ( " + cssOption.join(" | ") + " ): ");
 
-      if (css == "") {
-        css = "none";
-      }
+      if (css == "") css = "none";
       // Check if option is existed
       if (!cssPreprocessor.includes(css)) {
         showError("Invalid css preprocessor type file.", true);
       } else {
         // Store js preprocessor option if css option in existed
         var js = prompt("JS preprocessor ( " + jsOption.join(" | ") + " ): ");
-        if (js == "") {
-          js = "none";
-        }
+        if (js == "") js = "none";
         // Check if option is existed
         if (!jsPreprocessor.includes(js)) {
           showError("Invalid js preprocessor type file", true);
         } else {
           var license;
-          if (fs.existsSync(process.cwd() + "\\" + "package.json")) {
-            let configData = fs.readFileSync(
-              process.cwd() + "\\" + "package.json"
-            );
+          if (fs.existsSync(`${process.cwd()}\\package.json`)) {
+            let configData = fs.readFileSync(`${process.cwd()}\\package.json`);
             let obj = JSON.parse(configData);
             license = obj["license"];
             if (license != "MIT" && license != "ISC") {
@@ -108,20 +102,14 @@ if (args.help) {
                   `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
               }
 
-              // Write to config file and create one
-              fs.writeFile(
-                dir + "\\" + "generateConfig.txt",
-                configText,
-                function(err) {
-                  // Show error
-                  if (err) {
-                    showError("Something wrong when read you option", true);
-                  }
-                }
-              );
+              fs.writeFile(`${dir}\\generateConfig.txt`, configText, function(
+                err
+              ) {
+                if (err)
+                  showError("Something wrong when read you option", true);
+              });
             }
           } else {
-            // showError("It missed gensetup.json", true);
             license = prompt(
               "License ( " +
                 chalk.underline(" MIT ") +
@@ -131,21 +119,23 @@ if (args.help) {
                 " none " +
                 " ): "
             );
-            if (license == "") {
-              license = "MIT";
-            }
+            if (license == "") license = "MIT";
             // Check if option is existed
-            if (license != "MIT" && license != "none" && license != "ISC") {
+            if (
+              license.toUpperCase() != "MIT" &&
+              license.toUpperCase() != "none" &&
+              license.toUpperCase() != "ISC"
+            ) {
               showError("Invalid license", true);
             } else {
               let configText;
-              if (license == "ISC") {
+              if (license.toUpperCase() == "ISC") {
                 var name = prompt("Author: ");
                 configText =
                   `${html} \n` +
                   `${css} \n` +
                   `${js} \n` +
-                  `${license}|${name}`;
+                  `${license.toUpperCase()}|${name}`;
               } else {
                 configText =
                   `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
@@ -156,10 +146,7 @@ if (args.help) {
                 dir + "\\" + "generateConfig.txt",
                 configText,
                 function(err) {
-                  // Show error
-                  if (err) {
-                    showError("Something wrong when read options", true);
-                  }
+                  if (err) showError("Something wrong when read options", true);
                 }
               );
             }
@@ -182,25 +169,17 @@ if (args.help) {
     fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
       // Show error
       if (!err) {
-        // Split and trim data from file
-        dataOption = data.split("\n").map(x => x.trim());
+        dataOption = data.split("\n").map(x => x.trim()); // Split and trim data from file
 
-        if (args.remove) {
-          makeSrc(dataOption, dir, true); // Create source folder base on data from config file without sample
-        } else {
-          makeSrc(dataOption, dir); // Create source folder base on data from config file with sample
-        }
-      } else {
-        showError("Something wrong when read options", true);
-      }
+        if (args.remove) makeSrc(dataOption, dir, true);
+        // Create source folder base on data from config file without sample
+        else makeSrc(dataOption, dir); // Create source folder base on data from config file with sample
+      } else showError("Something wrong when read options", true);
     });
   }
 } else if (args.tree) {
-  // Show tree of file
   showTree();
-} else {
-  showError("Can not find this command ", true);
-}
+} else showError("Can not find this command ", true);
 
 // *********************************************
 
@@ -211,27 +190,30 @@ if (args.help) {
  */
 function showError(mess, showHelp = false) {
   console.error(chalk.red(emoji.get("x") + mess));
-  if (showHelp) {
-    // Show help screen
-    help();
-  }
+  if (showHelp) help();
 }
 
 /**
  * Show directory tree using genproject
  */
 function showTree() {
-  // Show directory of
   let dir1 = process.cwd();
-  if (fs.existsSync(dir + "\\" + "genproject.json")) {
-    let configData = fs.readFileSync(dir + "\\" + "genproject.json");
+  if (fs.existsSync(`${dir}\\genproject.json`)) {
+    let configData = fs.readFileSync(`${dir}\\genproject.json`);
     let obj = JSON.parse(configData);
     console.log(treeify.asTree(obj, true, false));
-  } else {
-    showError("It missed gensetup.json", true);
-  }
+  } else showError("It missed gensetup.json", true);
 }
 
+/**
+ *
+ * @param {String} dirsrc source path
+ * @param {String} fileName name of file
+ * @param {String} subFolder name of subfolder
+ * @param {String} fileType name of file type
+ * @param {String} text content of file
+ * @returns {Boolean} check error
+ */
 function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
   fs.writeFile(
     `${dirsrc}\\${fileType}\\${subFolder}${fileName}`,
@@ -249,9 +231,9 @@ function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
           ` File ${fileName} is created successfully.`
         )
       );
-      return false;
     }
   );
+  return false;
 }
 
 /**
@@ -358,9 +340,8 @@ function makeSrc(data, dir, remove = false) {
 
   // TODO: Create .gitignore
   if (!checkError) {
-    fs.writeFile(dir + "\\" + ".gitignore", "node_modules", function(err) {
+    fs.writeFile(`${dir}\\.gitignore`, "node_modules", function(err) {
       if (err) {
-        //Show error
         showError(err.toString(), true);
         checkError = true;
       }
@@ -385,53 +366,9 @@ function makeSrc(data, dir, remove = false) {
     let projectName = projectNameObj[projectNameObj.length - 1];
     let htmlDependencies, cssDependencies, jsDependencies;
 
-    switch (data[0]) {
-      case "pug":
-        htmlDependencies = `"gulp-pug": "4.0.1"`;
-        break;
-      case "haml":
-        htmlDependencies = `"gulp-haml": "1.0.1"`;
-        break;
-      case "slim":
-        htmlDependencies = `"gulp-slim": "0.3.0"`;
-        break;
-      default:
-        htmlDependencies = ``;
-        break;
-    }
-
-    switch (data[1]) {
-      case "sass":
-        cssDependencies = `"gulp-sass": "4.0.2",
-    "fibers": "4.0.2"`;
-        break;
-      case "scss":
-        cssDependencies = `"gulp-sass": "4.0.2",
-    "fibers": "4.0.2"`;
-        break;
-      case "stylus":
-        cssDependencies = `"gulp-stylus": "2.7.0"`;
-        break;
-      case "less":
-        cssDependencies = `"gulp-less": "4.0.1"`;
-        break;
-      default:
-        cssDependencies = ``;
-        break;
-    }
-
-    switch (data[2]) {
-      case "typescript":
-        jsDependencies = `"typescript": "3.7.5",
-    "gulp-typescript": "6.0.0-alpha.1"`;
-        break;
-      case "coffeescript":
-        jsDependencies = `"gulp-coffee": "3.0.3"`;
-        break;
-      default:
-        jsDependencies = ``;
-        break;
-    }
+    [htmlDependencies, cssDependencies, jsDependencies] = [
+      ...packageFile.gulp(data)
+    ];
 
     if (data[0] != "none") {
       if (data[1] != "none") {
@@ -445,44 +382,16 @@ function makeSrc(data, dir, remove = false) {
         }
       }
     }
+    let samplePackage = packageFile.npm(
+      projectName,
+      license,
+      htmlDependencies,
+      cssDependencies,
+      jsDependencies
+    );
 
-    let samplePackage = `{
-  "name": "${projectName}",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \\"Error: no test specified\\" && exit 1"
-  },
-  "author": "",
-  "license": "${license}",
-  "devDependencies": {
-    "@babel/core": "7.8.3",
-    "@babel/preset-env": "7.8.3",
-    "browser-sync": "2.26.7",
-    "gulp": "4.0.2",
-    "gulp-autoprefixer": "7.0.1",
-    "gulp-babel": "8.0.0",
-    "gulp-changed": "4.0.2",
-    "gulp-clean": "0.4.0",
-    "gulp-css-replace-url": "0.2.4",
-    "gulp-csso": "4.0.1",
-    "gulp-html-replace": "1.6.2",
-    "gulp-imagemin": "7.0.0",
-    "gulp-newer": "1.4.0",
-    "gulp-rename": "2.0.0",
-    "gulp-size": "3.0.0",
-    "gulp-sourcemaps": "2.6.5",
-    "gulp-uglify": "3.0.2",
-    "lodash": "4.17.15",
-    "lodash.template": "4.5.0",
-    ${htmlDependencies}${cssDependencies}${jsDependencies}
-  }
-}`;
-
-    fs.writeFile(dir + "\\" + "package.json", samplePackage, function(err) {
+    fs.writeFile(`${dir}\\package.json`, samplePackage, function(err) {
       if (err) {
-        //Show error
         showError(err.toString(), true);
         checkError = true;
       }
@@ -497,9 +406,8 @@ function makeSrc(data, dir, remove = false) {
 
   // TODO: Create README.md file to show in github in future
   if (!checkError) {
-    fs.writeFile(dir + "\\" + "README.md", "", function(err) {
+    fs.writeFile(`${dir}\\README.md`, "", function(err) {
       if (err) {
-        //Show error if can not create file
         showError(err.toString(), true);
         checkError = true;
       }
@@ -514,23 +422,7 @@ function makeSrc(data, dir, remove = false) {
 
   // TODO: Create gulpfile.js file
   if (!checkError) {
-    let gulpData = `const gulp = require('gulp');
-const { series, parallel, src, dest } = require('gulp');
-const browserSync = require('browser-sync').create();
-const image = require('gulp-imagemin');
-const htmlReplace = require('gulp-html-replace');
-const changed = require('gulp-changed');
-const newer = require('gulp-newer');
-const size = require('gulp-size');
-const babel = require('gulp-babel');
-const uglify = require('gulp-uglify');
-const rename = require('gulp-rename');
-const autoprefixer = require('gulp-autoprefixer');
-const csso = require('gulp-csso');
-const sourcemaps = require('gulp-sourcemaps');
-const clean = require('gulp-clean');
-const urlAdjuster = require('gulp-css-replace-url');
-`;
+    let gulpData = taskFile.gulp.data;
     let cssPackage,
       cssFunction,
       jsPackage,
@@ -732,119 +624,7 @@ function watch() {
   ${htmlWatch}
   ${jsWatch}
 }`;
-
-    let gulpMinify = `
-
-function minifyImage() {
-  return src(['./src/img/**/*', '!./src/img/desktop.ini'])
-    .pipe(changed('./docs/img'))
-    .pipe(newer('image/'))
-    .pipe(
-      image([
-        image.gifsicle({ interlaced: true }),
-        image.mozjpeg({quality: 75, progressive: true}),
-        image.optipng({ optimizationLevel: 5 })
-      ])
-    )
-    .pipe(
-      size({
-        showFiles: true
-      })
-    )
-    .pipe(dest('./docs/img'))
-    .pipe(dest('./src/img'));
-}
-
-function minifyJs() {
-  return src('./src/js/**/*.js')
-    .pipe(changed('./docs/js'))
-    .pipe(
-      babel({
-        presets: ['@babel/env']
-      })
-    )
-    .pipe(uglify())
-    .pipe(
-      rename({
-        suffix: '.min'
-      })
-    )
-    .pipe(dest('./docs/js'));
-}
-
-function minifyCss() {
-  return (
-    src(['./src/css/*.css'])
-      .pipe(changed('./docs/css'))
-      .pipe(sourcemaps.init())
-      .pipe(
-        urlAdjuster({
-          replace: ['../../', '../']
-        })
-      )
-      .pipe(autoprefixer())
-      .pipe(csso())
-      .pipe(
-        rename({
-          suffix: '.min'
-        })
-      )
-      .pipe(sourcemaps.write('.'))
-      .pipe(
-        size({
-          showFiles: true
-        })
-      )
-      .pipe(dest('./docs/css'))
-  );
-}
-
-function minifyHtml() {
-  return (
-    src('./src/**/*.html')
-      .pipe(changed('./docs'))
-      .pipe(
-        htmlReplace({
-          css: 'css/main.min.css',
-          js: 'js/index.min.js'
-        })
-      )
-      .pipe(dest('./docs'))
-  );
-}
-
-function fontCopy() {
-  return src('./src/font/*')
-    .pipe(changed('./docs/font'))
-    .pipe(dest('./docs/font'));
-}
-
-function libCopy() {
-  return src('./src/lib/**/*')
-    .pipe(changed('./docs/lib'))
-    .pipe(dest('./docs/lib'));
-}
-
-function cleanDist() {
-  return src('./docs', { read: false }).pipe(clean());
-}
-
-exports.watch = watch;
-exports.minifyImage = minifyImage;
-exports.minifyJs = minifyJs;
-exports.minifyCss = minifyCss;
-exports.minifyHtml = minifyHtml;
-exports.cleanDist = cleanDist;
-exports.default = series(
-  cleanDist,
-  parallel(
-    minifyImage,
-    parallel(
-      minifyJs,
-      parallel(minifyCss, parallel(minifyHtml, parallel(fontCopy, libCopy)))
-    )
-  )
-);`;
+    let gulpMinify = taskFile.gulp.minify;
 
     gulpData += htmlPackage;
     gulpData += cssPackage;
@@ -857,7 +637,7 @@ exports.default = series(
     gulpData += gulpWatch;
     gulpData += gulpMinify;
 
-    fs.writeFile(dir + "\\" + "gulpfile.js", gulpData, function(err) {
+    fs.writeFile(`${dir}\\gulpfile.js`, gulpData, function(err) {
       if (err) {
         //Show error if can not create file
         showError(err.toString(), true);
@@ -876,46 +656,13 @@ exports.default = series(
   if (!checkError) {
     let license;
     if (data[3] != "none") {
-      if (data[3] == "MIT") {
-        license = `The MIT License
-
-Copyright (c)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy 
-of this software and associated documentation files (the "Software"), to deal 
-in the Software without restriction, including without limitation the rights 
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-copies of the Software, and to permit persons to whom the Software is 
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all 
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.`;
-      } else {
+      if (data[3] == "MIT") license = licenseFile.mit;
+      else {
         let isc = data[3].split("|");
         let currentYear = new Date().getFullYear();
-        license = `Copyright ${currentYear} ${isc[1]}
-
-Permission to use, copy, modify, and/or distribute this software for any 
-purpose with or without fee is hereby granted, provided that the above 
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.`;
+        license = licenseFile.isc(currentYear, isc[1]);
       }
-      fs.writeFile(dir + "\\" + "LICENSE", license, function(err) {
+      fs.writeFile(`${dir}\\LICENSE`, license, function(err) {
         if (err) {
           showError(err.toString(), true);
           checkError = true;
@@ -933,65 +680,37 @@ PERFORMANCE OF THIS SOFTWARE.`;
   // Default folder and file
   // Create css folder default
   if (!checkError) {
-    fs.mkdirSync(dirsrc + "\\" + "css");
+    fs.mkdirSync(`${dirsrc}\\css`);
     objTree["src"]["css"] = {};
   }
 
   // Create main.css file in css folder default
   if (!checkError) {
-    fs.writeFile(
-      dirsrc + "\\" + "css" + "\\" + "main.css",
-      cssFile.none.main,
-      function(err) {
-        // Show error
-        if (err) {
-          showError(err.toString(), true);
-          checkError = true;
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            " File main.css is created successfully."
-          )
-        );
-        objTree["src"]["css"]["main.css"] = null;
-      }
-    );
+    checkError = createFile(dirsrc, "main.css", "", "css", cssFile.none.main);
+
+    if (!checkError) {
+      objTree["src"]["css"]["main.css"] = null;
+    }
   }
 
   // Create js folder default
   if (!checkError) {
-    fs.mkdirSync(dirsrc + "\\" + "js");
+    fs.mkdirSync(`${dirsrc}\\js`);
     objTree["src"]["js"] = {};
   }
 
   // Create index.js file in js folder default
   if (!checkError) {
-    fs.writeFile(
-      dirsrc + "\\" + "js" + "\\" + "index.js",
-      jsFile.none.index,
-      function(err) {
-        // Show error
-        if (err) {
-          showError(err.toString(), true);
-          checkError = true;
-        }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            " File index.js is created successfully."
-          )
-        );
-        objTree["src"]["js"]["index.js"] = null;
-      }
-    );
+    checkError = createFile(dirsrc, "index.js", "", "js", jsFile.none.index);
+
+    if (!checkError) {
+      objTree["src"]["js"]["index.js"] = null;
+    }
   }
 
   // Create index.html file default
   if (!checkError) {
-    fs.writeFile(dirsrc + "\\" + "index.html", htmlFile.none.index, function(
-      err
-    ) {
+    fs.writeFile(`${dirsrc}\\index.html`, htmlFile.none.index, function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
@@ -1008,52 +727,41 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
   // Check if user contain html preprocessor
   if (data[0] != "none" && !checkError) {
-    // Create folder with data type
-    fs.mkdirSync(dirsrc + "\\" + data[0]);
+    fs.mkdirSync(`${dirsrc}\\${data[0]}`); // Create folder with data type
     objTree["src"][data[0]] = {};
-    // Create file with data type at the end
 
     if (data[0] == "pug") {
       let pugFile = htmlFile.pug;
 
       checkError = createFile(dirsrc, "index.pug", "", "pug", pugFile.index);
 
-      if (!checkError) {
-        objTree["src"]["pug"]["index.pug"] = null;
-      }
+      if (!checkError) objTree["src"]["pug"]["index.pug"] = null;
     } else if (data[0] == "haml") {
       let hamlFile = htmlFile.haml;
 
       checkError = createFile(dirsrc, "index.haml", "", "haml", hamlFile.index);
 
-      if (!checkError) {
-        objTree["src"]["haml"]["index.haml"] = null;
-      }
+      if (!checkError) objTree["src"]["haml"]["index.haml"] = null;
     } else {
       let slimFile = htmlFile.slim;
       checkError = createFile(dirsrc, "index.slim", "", "slim", slimFile.index);
 
-      if (!checkError) {
-        objTree["src"]["slim"]["index.slim"] = null;
-      }
+      if (!checkError) objTree["src"]["slim"]["index.slim"] = null;
     }
   }
 
   // Check if user contain css preprocessor
   if (data[1] != "none" && !checkError) {
-    // Create folder with data type
-    fs.mkdirSync(dirsrc + "\\" + data[1]);
+    fs.mkdirSync(`${dirsrc}\\${data[1]}`); // Create folder with data type
     objTree["src"][data[1]] = {};
-    // Create file with data type at the end
+
     if (data[1] == "less") {
       let lessFile = cssFile.less;
       checkError = createFile(dirsrc, "main.less", "", "less", lessFile.main);
 
-      if (!checkError) {
-        objTree["src"]["less"]["main.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["main.less"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "utilities");
+      fs.mkdirSync(`${dirsrc}\\less\\utilities`);
       objTree["src"]["less"]["utilities"] = {};
 
       checkError = createFile(
@@ -1064,9 +772,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.font
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["utilities"]["font.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["utilities"]["font.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1076,11 +782,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.text
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["utilities"]["text.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["utilities"]["text.less"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "layout");
+      fs.mkdirSync(`${dirsrc}\\less\\layout`);
       objTree["src"]["less"]["layout"] = {};
 
       checkError = createFile(
@@ -1091,9 +795,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.flex
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["layout"]["flex.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["layout"]["flex.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1103,9 +805,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.header
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["layout"]["header.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["layout"]["header.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1115,9 +815,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.section
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["layout"]["section.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["layout"]["section.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1127,11 +825,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.footer
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["layout"]["footer.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["layout"]["footer.less"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "components");
+      fs.mkdirSync(`${dirsrc}\\less\\components`);
       objTree["src"]["less"]["components"] = {};
 
       checkError = createFile(
@@ -1142,11 +838,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         ""
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["less"]["components"]["button.less"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "less" + "\\" + "base");
+      fs.mkdirSync(`${dirsrc}\\less\\base`);
       objTree["src"]["less"]["base"] = {};
 
       checkError = createFile(
@@ -1157,9 +852,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.reset
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["base"]["reset.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["base"]["reset.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1169,19 +862,15 @@ PERFORMANCE OF THIS SOFTWARE.`;
         lessFile.typography
       );
 
-      if (!checkError) {
-        objTree["src"]["less"]["base"]["typography.less"] = null;
-      }
+      if (!checkError) objTree["src"]["less"]["base"]["typography.less"] = null;
     } else if (data[1] == "sass") {
       let sassFile = cssFile.sass;
 
       checkError = createFile(dirsrc, "main.sass", "", "sass", sassFile.main);
 
-      if (!checkError) {
-        objTree["src"]["sass"]["main.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["main.sass"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "utilities");
+      fs.mkdirSync(`${dirsrc}\\sass\\utilities`);
       objTree["src"]["sass"]["utilities"] = {};
 
       checkError = createFile(
@@ -1192,9 +881,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.font
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["utilities"]["_font.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["utilities"]["_font.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1204,11 +891,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.text
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["utilities"]["_text.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["utilities"]["_text.sass"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "layout");
+      fs.mkdirSync(`${dirsrc}\\sass\\layout`);
       objTree["src"]["sass"]["layout"] = {};
 
       checkError = createFile(
@@ -1219,9 +904,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.flex
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["layout"]["_flex.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["layout"]["_flex.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1231,9 +914,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.header
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["layout"]["_header.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["layout"]["_header.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1243,9 +924,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.section
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["layout"]["_section.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["layout"]["_section.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1255,11 +934,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.footer
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["layout"]["_footer.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["layout"]["_footer.sass"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "helpers");
+      fs.mkdirSync(`${dirsrc}\\sass\\helpers`);
       objTree["src"]["sass"]["helpers"] = {};
 
       checkError = createFile(
@@ -1270,9 +947,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.variables
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["sass"]["helpers"]["_variables.sass"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1282,9 +958,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.mixins
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["helpers"]["_mixins.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["helpers"]["_mixins.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1294,9 +968,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.functions
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["sass"]["helpers"]["_functions.sass"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1306,11 +979,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.helpers
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["sass"]["helpers"]["_helpers.sass"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "components");
+      fs.mkdirSync(`${dirsrc}\\sass\\components`);
       objTree["src"]["sass"]["components"] = {};
 
       checkError = createFile(
@@ -1321,11 +993,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.button
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["sass"]["components"]["_button.sass"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "sass" + "\\" + "base");
+      fs.mkdirSync(`${dirsrc}\\sass\\base`);
       objTree["src"]["sass"]["base"] = {};
 
       checkError = createFile(
@@ -1336,9 +1007,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.reset
       );
 
-      if (!checkError) {
-        objTree["src"]["sass"]["base"]["_reset.sass"] = null;
-      }
+      if (!checkError) objTree["src"]["sass"]["base"]["_reset.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1348,19 +1017,16 @@ PERFORMANCE OF THIS SOFTWARE.`;
         sassFile.typography
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["sass"]["base"]["_typography.sass"] = null;
-      }
     } else if (data[1] == "scss") {
       let scssFile = cssFile.scss;
 
       checkError = createFile(dirsrc, "main.scss", "", "scss", scssFile.main);
 
-      if (!checkError) {
-        objTree["src"]["scss"]["main.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["main.scss"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "utilities");
+      fs.mkdirSync(`${dirsrc}\\scss\\utilities`);
       objTree["src"]["scss"]["utilities"] = {};
 
       checkError = createFile(
@@ -1371,9 +1037,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.font
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["utilities"]["_font.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["utilities"]["_font.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1383,11 +1047,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.text
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["utilities"]["_text.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["utilities"]["_text.scss"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "layout");
+      fs.mkdirSync(`${dirsrc}\\scss\\layout`);
       objTree["src"]["scss"]["layout"] = {};
 
       checkError = createFile(
@@ -1398,9 +1060,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.flex
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["layout"]["_flex.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["layout"]["_flex.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1410,9 +1070,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.header
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["layout"]["_header.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["layout"]["_header.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1422,9 +1080,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.section
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["layout"]["_section.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["layout"]["_section.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1434,11 +1090,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.footer
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["layout"]["_footer.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["layout"]["_footer.scss"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "helpers");
+      fs.mkdirSync(`${dirsrc}\\scss\\helpers`);
       objTree["src"]["scss"]["helpers"] = {};
 
       checkError = createFile(
@@ -1449,9 +1103,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.variables
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["scss"]["helpers"]["_variables.scss"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1461,9 +1114,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.mixins
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["helpers"]["_mixins.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["helpers"]["_mixins.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1473,9 +1124,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.functions
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["scss"]["helpers"]["_functions.scss"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1485,11 +1135,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.helpers
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["scss"]["helpers"]["_helpers.scss"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "components");
+      fs.mkdirSync(`${dirsrc}\\scss\\components`);
       objTree["src"]["scss"]["components"] = {};
 
       checkError = createFile(
@@ -1500,9 +1149,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.button
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["scss"]["components"]["_button.scss"] = null;
-      }
 
       fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "base");
       objTree["src"]["scss"]["base"] = {};
@@ -1515,9 +1163,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.reset
       );
 
-      if (!checkError) {
-        objTree["src"]["scss"]["base"]["_reset.scss"] = null;
-      }
+      if (!checkError) objTree["src"]["scss"]["base"]["_reset.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1527,9 +1173,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         scssFile.typography
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["scss"]["base"]["_typography.scss"] = null;
-      }
     } else {
       let stylusFile = cssFile.stylus;
 
@@ -1541,11 +1186,9 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.main
       );
 
-      if (!checkError) {
-        objTree["src"]["stylus"]["main.styl"] = null;
-      }
+      if (!checkError) objTree["src"]["stylus"]["main.styl"] = null;
 
-      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "utilities");
+      fs.mkdirSync(`${dirsrc}\\stylus\\utilities`);
       objTree["src"]["stylus"]["utilities"] = {};
 
       checkError = createFile(
@@ -1556,9 +1199,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.font
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["utilities"]["_font.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1568,11 +1210,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.text
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["utilities"]["_text.styl"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "layout");
+      fs.mkdirSync(`${dirsrc}\\stylus\\layout`);
       objTree["src"]["stylus"]["layout"] = {};
 
       checkError = createFile(
@@ -1583,9 +1224,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.flex
       );
 
-      if (!checkError) {
-        objTree["src"]["stylus"]["layout"]["_flex.styl"] = null;
-      }
+      if (!checkError) objTree["src"]["stylus"]["layout"]["_flex.styl"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1595,9 +1234,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.header
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["layout"]["_header.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1607,9 +1245,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.section
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["layout"]["_section.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1619,11 +1256,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.footer
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["layout"]["_footer.styl"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "helpers");
+      fs.mkdirSync(`${dirsrc}\\stylus\\helpers`);
       objTree["src"]["stylus"]["helpers"] = {};
 
       checkError = createFile(
@@ -1634,9 +1270,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.variables
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["helpers"]["_variables.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1646,9 +1281,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.mixins
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["helpers"]["_mixins.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1658,9 +1292,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.functions
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["helpers"]["_functions.styl"] = null;
-      }
 
       checkError = createFile(
         dirsrc,
@@ -1670,11 +1303,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.helpers
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["helpers"]["_helpers.styl"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "components");
+      fs.mkdirSync(`${dirsrc}\\stylus\\components`);
       objTree["src"]["stylus"]["components"] = {};
 
       checkError = createFile(
@@ -1685,11 +1317,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.button
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["components"]["_button.styl"] = null;
-      }
 
-      fs.mkdirSync(dirsrc + "\\" + "stylus" + "\\" + "base");
+      fs.mkdirSync(`${dirsrc}\\stylus\\base`);
       objTree["src"]["stylus"]["base"] = {};
 
       checkError = createFile(
@@ -1700,9 +1331,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.reset
       );
 
-      if (!checkError) {
-        objTree["src"]["stylus"]["base"]["_reset.styl"] = null;
-      }
+      if (!checkError) objTree["src"]["stylus"]["base"]["_reset.styl"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1712,9 +1341,8 @@ PERFORMANCE OF THIS SOFTWARE.`;
         stylusFile.typography
       );
 
-      if (!checkError) {
+      if (!checkError)
         objTree["src"]["stylus"]["base"]["_typography.styl"] = null;
-      }
     }
   }
 
@@ -1729,9 +1357,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
       checkError = createFile(dirsrc, "index.ts", "", "ts", tsFile.index);
 
-      if (!checkError) {
-        objTree["src"]["ts"]["index.ts"] = null;
-      }
+      if (!checkError) objTree["src"]["ts"]["index.ts"] = null;
     } else {
       let coffeeFile = jsFile.coffeescript;
       // Create coffee folder instead of coffeescript
@@ -1745,9 +1371,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
         "coffeescript",
         coffeeFile.index
       );
-      if (!checkError) {
-        objTree["src"]["coffeescript"]["index.coffee"] = null;
-      }
+      if (!checkError) objTree["src"]["coffeescript"]["index.coffee"] = null;
     }
   }
 
@@ -1757,7 +1381,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
       fs.mkdirSync(`${dirsrc}\\font`);
       objTree["src"]["font"] = {};
     } else {
-      ncp(__dirname + "\\" + "font", dirsrc + "\\" + "font", function(err) {
+      ncp(`${__dirname}\\font`, `${dirsrc}\\font`, function(err) {
         if (err) {
           return console.error(err);
         }
@@ -1776,7 +1400,7 @@ PERFORMANCE OF THIS SOFTWARE.`;
       fs.mkdirSync(`${dirsrc}\\img`);
       objTree["src"]["img"] = null;
     } else {
-      ncp(__dirname + "\\" + "img", dirsrc + "\\" + "img", function(err) {
+      ncp(`${__dirname}\\img`, `${dirsrc}\\img`, function(err) {
         if (err) {
           return console.error(err);
         }
@@ -1790,10 +1414,10 @@ PERFORMANCE OF THIS SOFTWARE.`;
   // TODO: Create lib folder for store lib in future
   if (!checkError) {
     if (remove) {
-      fs.mkdirSync(dirsrc + "\\" + "lib");
+      fs.mkdirSync(`${dirsrc}\\lib`);
       objTree["src"]["lib"] = null;
     } else {
-      ncp(__dirname + "\\" + "lib", dirsrc + "\\" + "lib", function(err) {
+      ncp(`${__dirname}\\lib`, `${dirsrc}\\lib`, function(err) {
         if (err) {
           return console.error(err);
         }
@@ -1813,13 +1437,12 @@ PERFORMANCE OF THIS SOFTWARE.`;
   }
 
   // Delete config file after create success folder
-  fs.unlinkSync(dir + "\\" + "generateConfig.txt");
+  fs.unlinkSync(`${dir}\\generateConfig.txt`);
   setTimeout(
     function(objTree) {
       var json = JSON.stringify(objTree);
-      // TODO: Create LICENSE file to show license of open source project in github in future
       if (!checkError) {
-        fs.writeFile(dir + "\\" + "genproject.json", json, function(err) {
+        fs.writeFile(`${dir}\\genproject.json`, json, function(err) {
           if (err) {
             showError(err.toString(), true);
             checkError = true;
@@ -1874,9 +1497,10 @@ function help() {
   console.log("  $ gensetup <command>");
   console.log();
   console.log("Options:");
-  console.log("  -h, --help            print this help");
-  console.log("  -v, --version         print version");
-  console.log("  -t, --tree            print directory tree");
-  console.log("  init <folder name>    create new folder");
+  console.log("  -h, --help               print this help");
+  console.log("  -v, --version            print version");
+  console.log("  -t, --tree               print directory tree");
+  console.log("  init <folder_name>       create new folder with sample");
+  console.log("  init <folder_name> -r    create new folder without sample");
   console.log();
 }
