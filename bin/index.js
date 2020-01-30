@@ -11,9 +11,9 @@ const treeify = require("treeify"); // Turn object to tree
 const ncp = require("ncp").ncp; // Copy folder
 ncp.limit = 16;
 
-const htmlFile = require("./html.js"); // Data of all html preprocessor code
-const cssFile = require("./css.js"); // Data of all css preprocessor code
-const jsFile = require("./javascript.js"); // Data of all js preprocessor code
+let htmlFile = require("./html.js"); // Data of all html preprocessor code
+let cssFile = require("./css.js"); // Data of all css preprocessor code
+let jsFile = require("./javascript.js"); // Data of all js preprocessor code
 
 // Store all kind of preprocessor able to use
 const htmlOption = [chalk.underline("none"), "haml", "pug", "slim"];
@@ -27,9 +27,9 @@ const jsPreprocessor = ["none", "typescript", "coffeescript"];
 // Store argument of cli-app
 var args = require("minimist")(process.argv.slice(2), {
   // Use --
-  boolean: ["help", "version", "tree"],
+  boolean: ["help", "version", "tree", "remove"],
   // Use -
-  alias: { h: "help", v: "version", t: "tree" }
+  alias: { h: "help", v: "version", t: "tree", r: "remove" }
 });
 
 var dir = process.cwd(); // current directory
@@ -185,8 +185,11 @@ if (args.help) {
         // Split and trim data from file
         dataOption = data.split("\n").map(x => x.trim());
 
-        // Create source folder base on data from config file
-        makeSrc(dataOption, dir);
+        if (args.remove) {
+          makeSrc(dataOption, dir, true); // Create source folder base on data from config file without sample
+        } else {
+          makeSrc(dataOption, dir); // Create source folder base on data from config file with sample
+        }
       } else {
         showError("Something wrong when read options", true);
       }
@@ -229,28 +232,7 @@ function showTree() {
   }
 }
 
-// function objectTree(fileName, fileType, err, obj, folderName1) {
-//   if (err) {
-//     showError(err.toString(), true);
-//     return true;
-//   }
-//   console.log(
-//     chalk.green(
-//       emoji.get("heavy_check_mark"),
-//       ` File ${fileName}.${fileType} is created successfully.`
-//     )
-//   );
-//   obj["src"][folderName1][`${fileName}.${fileType}`] = null;
-//   return false;
-// }
-
-var createFile = function(
-  dirsrc,
-  fileName,
-  subFolder = "",
-  fileType,
-  text = ""
-) {
+function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
   fs.writeFile(
     `${dirsrc}\\${fileType}\\${subFolder}${fileName}`,
     text,
@@ -270,14 +252,14 @@ var createFile = function(
       return false;
     }
   );
-};
+}
 
 /**
  * Create src folder
  * @param {array} data Save all data type to create folder source
  * @param {string} dir Store directory of source
  */
-function makeSrc(data, dir) {
+function makeSrc(data, dir, remove = false) {
   var objTree = {};
   let checkError = false;
 
@@ -291,6 +273,88 @@ function makeSrc(data, dir) {
   fs.mkdirSync(dirdocs);
   objTree["src"] = {};
   objTree["docs"] = null;
+
+  if (remove) {
+    htmlFile = {
+      pug: {
+        index: ""
+      },
+      none: {
+        index: ""
+      },
+      haml: {
+        index: ""
+      },
+      slim: {
+        index: ""
+      }
+    };
+
+    cssFile = {
+      scss: {
+        reset: "",
+        typography: "",
+        variables: "",
+        flex: "",
+        header: "",
+        section: "",
+        footer: "",
+        font: "",
+        text: "",
+        main: ""
+      },
+      none: {
+        main: ""
+      },
+      sass: {
+        reset: "",
+        typography: "",
+        variables: "",
+        flex: "",
+        header: "",
+        section: "",
+        footer: "",
+        font: "",
+        text: "",
+        main: ""
+      },
+      less: {
+        reset: "",
+        typography: "",
+        flex: "",
+        header: "",
+        section: "",
+        footer: "",
+        font: "",
+        text: "",
+        main: ""
+      },
+      stylus: {
+        reset: "",
+        typography: "",
+        variables: "",
+        flex: "",
+        header: "",
+        section: "",
+        footer: "",
+        font: "",
+        text: "",
+        main: ""
+      }
+    };
+
+    jsFile = {
+      none: {
+        index: ""
+      },
+      typescript: {
+        index: ""
+      },
+      coffeescript: {
+        index: ""
+      }
+    };
+  }
 
   // TODO: Create .gitignore
   if (!checkError) {
@@ -1689,42 +1753,55 @@ PERFORMANCE OF THIS SOFTWARE.`;
 
   // TODO: Create font folder for store font in future
   if (!checkError) {
-    ncp(__dirname + "\\" + "font", dirsrc + "\\" + "font", function(err) {
-      if (err) {
-        return console.error(err);
-      }
+    if (remove) {
+      fs.mkdirSync(`${dirsrc}\\font`);
       objTree["src"]["font"] = {};
-      objTree["src"]["font"]["FiraCode-Regular.ttf"] = null;
-      objTree["src"]["font"]["Roboto-Bold.ttf"] = null;
-      objTree["src"]["font"]["Roboto-Medium.ttf"] = null;
-      objTree["src"]["font"]["Roboto-Regular.ttf"] = null;
-    });
+    } else {
+      ncp(__dirname + "\\" + "font", dirsrc + "\\" + "font", function(err) {
+        if (err) {
+          return console.error(err);
+        }
+        objTree["src"]["font"] = {};
+        objTree["src"]["font"]["FiraCode-Regular.ttf"] = null;
+        objTree["src"]["font"]["Roboto-Bold.ttf"] = null;
+        objTree["src"]["font"]["Roboto-Medium.ttf"] = null;
+        objTree["src"]["font"]["Roboto-Regular.ttf"] = null;
+      });
+    }
   }
 
   // TODO: Create img folder for store img in future
   if (!checkError) {
-    // fs.mkdirSync(dirsrc + "\\" + "img");
-    // objTree["src"]["img"] = null;
-    ncp(__dirname + "\\" + "img", dirsrc + "\\" + "img", function(err) {
-      if (err) {
-        return console.error(err);
-      }
-      objTree["src"]["img"] = {};
-      objTree["src"]["img"]["header.svg"] = null;
-      objTree["src"]["img"]["section.svg"] = null;
-    });
+    if (remove) {
+      fs.mkdirSync(`${dirsrc}\\img`);
+      objTree["src"]["img"] = null;
+    } else {
+      ncp(__dirname + "\\" + "img", dirsrc + "\\" + "img", function(err) {
+        if (err) {
+          return console.error(err);
+        }
+        objTree["src"]["img"] = {};
+        objTree["src"]["img"]["header.svg"] = null;
+        objTree["src"]["img"]["section.svg"] = null;
+      });
+    }
   }
 
   // TODO: Create lib folder for store lib in future
   if (!checkError) {
-    ncp(__dirname + "\\" + "lib", dirsrc + "\\" + "lib", function(err) {
-      if (err) {
-        return console.error(err);
-      }
-      objTree["src"]["lib"] = {};
-      objTree["src"]["lib"]["jquery.scrollify.js"] = null;
-      objTree["src"]["lib"]["jquery-3.4.1.min.js"] = null;
-    });
+    if (remove) {
+      fs.mkdirSync(dirsrc + "\\" + "lib");
+      objTree["src"]["lib"] = null;
+    } else {
+      ncp(__dirname + "\\" + "lib", dirsrc + "\\" + "lib", function(err) {
+        if (err) {
+          return console.error(err);
+        }
+        objTree["src"]["lib"] = {};
+        objTree["src"]["lib"]["jquery.scrollify.js"] = null;
+        objTree["src"]["lib"]["jquery-3.4.1.min.js"] = null;
+      });
+    }
   }
 
   if (!checkError) {
