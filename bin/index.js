@@ -13,6 +13,16 @@ ncp.limit = 16;
 
 const prompts = require("prompts"); // New prompt to autocomplete
 
+// New feature
+const ora = require("ora");
+// @ts-ignore
+let spinner = new ora({
+  discardStdin: false,
+  text: ""
+});
+
+//
+
 let htmlFile = require("./html.js"); // Data of all html preprocessor code
 let cssFile = require("./css.js"); // Data of all css preprocessor code
 let jsFile = require("./javascript.js"); // Data of all js preprocessor code
@@ -293,6 +303,8 @@ function showTree() {
  * @returns {Boolean} check error
  */
 function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
+  spinner.start();
+  spinner.text = `Loading ${chalk.yellow(`${fileName}`)}`;
   fs.writeFile(
     `${dirsrc}\\${fileType}\\${subFolder}${fileName}`,
     text,
@@ -303,12 +315,11 @@ function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
         // checkError = true;
         return true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          ` File ${fileName} is created successfully.`
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green(`File ${fileName} is created successfully.`)}`
+        );
+      }, 2200);
     }
   );
   return false;
@@ -418,22 +429,25 @@ function makeSrc(data, dir, remove = false, exFile = false) {
 
   // TODO: Create .gitignore
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow(".gitignore")}`;
     fs.writeFile(`${dir}\\.gitignore`, "node_modules", function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File .gitignore is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File .gitignore is created successfully.")}`
+        );
+      }, 700);
     });
   }
 
   // TODO: Create package.json if it not exist
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("package.json")}`;
     let license;
     if (data[3] == "MIT") {
       license = "MIT";
@@ -473,33 +487,35 @@ function makeSrc(data, dir, remove = false, exFile = false) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File package.json is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File package.json is created successfully.")}`
+        );
+      }, 800);
     });
   }
 
   // TODO: Create README.md file to show in github in future
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("README.md")}`;
     fs.writeFile(`${dir}\\README.md`, "", function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File README.md is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File README.md is created successfully.")}`
+        );
+      }, 1000);
     });
   }
 
   // TODO: Create gulpfile.js file
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("gulpfile.js")}`;
     let gulpData = taskFile.gulp.data;
     let cssPackage,
       cssFunction,
@@ -721,17 +737,18 @@ function watch() {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File gulpfile.js is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File gulpfile.js is created successfully.")}`
+        );
+      }, 1500);
     });
   }
 
   // TODO: Create LICENSE file to show license of open source project in github in future
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("LICENSE")}`;
     let license;
     if (data[3] != "none") {
       if (data[3] == "MIT") license = licenseFile.mit;
@@ -745,12 +762,11 @@ function watch() {
           showError(err.toString(), true);
           checkError = true;
         }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            " File LICENSE is created successfully."
-          )
-        );
+        setTimeout(() => {
+          spinner.succeed(
+            `${chalk.green("File LICENSE is created successfully.")}`
+          );
+        }, 1100);
       });
     }
   }
@@ -788,17 +804,18 @@ function watch() {
 
   // Create index.html file default
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("index.html")}`;
     fs.writeFile(`${dirsrc}\\index.html`, htmlFile.none.index, function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File index.html is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File index.html is created successfully.")}`
+        );
+      }, 2000);
       objTree["src"]["index.html"] = null;
     });
   }
@@ -1521,16 +1538,15 @@ function watch() {
     function(objTree) {
       var json = JSON.stringify(objTree);
       if (!checkError) {
+        spinner = ora().start();
+        spinner.text = `Loading ${chalk.yellow("genproject.json")}`;
         fs.writeFile(`${dir}\\genproject.json`, json, function(err) {
           if (err) {
             showError(err.toString(), true);
             checkError = true;
           }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              " File genproject.json is created successfully."
-            )
+          spinner.succeed(
+            `${chalk.green("File genproject.json is created successfully.")}`
           );
           // This show that to do after create project
           console.log();
@@ -1562,7 +1578,7 @@ function watch() {
         showError("Fail to create folder ", true);
       }
     },
-    1000,
+    3000,
     objTree
   );
 }

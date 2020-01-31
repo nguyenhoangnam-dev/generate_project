@@ -29,6 +29,7 @@
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "node-emoji": "^1.10.0",
+    "ora": "^4.0.3",
     "prompts": "^2.3.0",
     "syncprompt": "^2.0.0",
     "treeify": "^1.1.0"
