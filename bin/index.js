@@ -11,10 +11,7 @@ const treeify = require("treeify"); // Turn object to tree
 const ncp = require("ncp").ncp; // Copy folder
 ncp.limit = 16;
 
-// New feature
-const prompts = require("prompts");
-
-//
+const prompts = require("prompts"); // New prompt to autocomplete
 
 let htmlFile = require("./html.js"); // Data of all html preprocessor code
 let cssFile = require("./css.js"); // Data of all css preprocessor code
@@ -69,6 +66,7 @@ if (args.help) {
       checkSupportPrompts = true;
     } else {
       let c = shell.split`\\`.pop();
+      // Check if git bash run CLI app
       if (c == "bash.exe") {
         checkSupportPrompts = false;
       } else {
