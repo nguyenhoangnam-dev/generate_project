@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
+    "directory-tree": "^2.2.4",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "node-emoji": "^1.10.0",
