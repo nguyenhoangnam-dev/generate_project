@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Path of header.svg and section.svg when build in docs
+- Not working in zsh
 
 ## [2.2.0] - 2020-01-30
 
