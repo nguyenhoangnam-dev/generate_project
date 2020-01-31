@@ -4,12 +4,17 @@
 
 const path = require("path"); // Join path of process.cwd() and file
 const fs = require("fs"); // Create file, delete file, create folder, write to file
-const prompt = require("syncprompt"); // Get input from terminal
 const chalk = require("chalk"); // Color text
-const emoji = require("node-emoji"); // Show emoji
-const treeify = require("treeify"); // Turn object to tree
 const ncp = require("ncp").ncp; // Copy folder
 ncp.limit = 16;
+
+const prompts = require("prompts"); // New prompt to autocomplete
+const ora = require("ora");
+// @ts-ignore
+let spinner = new ora({
+  discardStdin: false,
+  text: ""
+});
 
 let htmlFile = require("./html.js"); // Data of all html preprocessor code
 let cssFile = require("./css.js"); // Data of all css preprocessor code
@@ -17,6 +22,7 @@ let jsFile = require("./javascript.js"); // Data of all js preprocessor code
 let licenseFile = require("./license.js");
 let taskFile = require("./task.js");
 let packageFile = require("./package.js");
+let dirTree = require("./tree");
 
 // Store all kind of preprocessor able to use
 const htmlOption = [chalk.underline("none"), "haml", "pug", "slim"];
@@ -29,10 +35,8 @@ const jsPreprocessor = ["none", "typescript", "coffeescript"];
 
 // Store argument of cli-app
 var args = require("minimist")(process.argv.slice(2), {
-  // Use --
-  boolean: ["help", "version", "tree", "remove"],
-  // Use -
-  alias: { h: "help", v: "version", t: "tree", r: "remove" }
+  boolean: ["help", "version", "tree", "remove"], // Use --
+  alias: { h: "help", v: "version", t: "tree", r: "remove" } // Use -
 });
 
 var dir = process.cwd(); // current directory
@@ -41,7 +45,7 @@ var dir = process.cwd(); // current directory
 if (args.help) {
   help(); // Show help screen
 } else if (args.version) {
-  console.log("v.1.1.0"); // Show version of app
+  console.log("v3.0.0"); // Show version of app
 } else if (args._[0] == "init") {
   let overwrite = false; // Check if folder name is existed in this directory
   if (args._[1]) {
@@ -50,135 +54,196 @@ if (args.help) {
       dir = `${dir}\\${args._[1]}`; // Change dir to new directory
     } else {
       overwrite = true;
-      console.error(
-        chalk.yellow(emoji.get("no_entry"), "This file name is exist !")
-      );
+      console.error(chalk.yellow("This file name is exist !"));
     }
     if (!overwrite) fs.mkdirSync(dir); // Create new project folder
   }
 
   if (!overwrite) {
-    // Store html preprocessor option
-    let html = prompt("HTML preprocessor ( " + htmlOption.join(" | ") + " ): ");
-    // Check if option is exist
-    if (html == "") html = "none";
-
-    if (!htmlPreprocessor.includes(html)) {
-      showError("Invalid html preprocessor type file.", true);
+    let checkSupportPrompts;
+    let shell = process.env.SHELL;
+    if (shell == undefined) {
+      checkSupportPrompts = true;
     } else {
-      // Store css preprocessor option if html option existed
-      var css = prompt("CSS preprocessor ( " + cssOption.join(" | ") + " ): ");
-
-      if (css == "") css = "none";
-      // Check if option is existed
-      if (!cssPreprocessor.includes(css)) {
-        showError("Invalid css preprocessor type file.", true);
+      let c = shell.split`\\`.pop();
+      // Check if git bash run CLI app
+      if (c == "bash.exe") {
+        checkSupportPrompts = false;
       } else {
-        // Store js preprocessor option if css option in existed
-        var js = prompt("JS preprocessor ( " + jsOption.join(" | ") + " ): ");
-        if (js == "") js = "none";
-        // Check if option is existed
-        if (!jsPreprocessor.includes(js)) {
-          showError("Invalid js preprocessor type file", true);
-        } else {
-          var license;
-          if (fs.existsSync(`${process.cwd()}\\package.json`)) {
-            let configData = fs.readFileSync(`${process.cwd()}\\package.json`);
-            let obj = JSON.parse(configData);
-            license = obj["license"];
-            if (license != "MIT" && license != "ISC") {
-              showError("Invalid license", true);
-            } else {
-              let configText;
-              if (license == "ISC") {
-                var name = obj["author"];
-                configText =
-                  `${html} \n` +
-                  `${css} \n` +
-                  `${js} \n` +
-                  `${license}|${name}`;
-              } else {
-                configText =
-                  `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
-              }
-
-              fs.writeFile(`${dir}\\generateConfig.txt`, configText, function(
-                err
-              ) {
-                if (err)
-                  showError("Something wrong when read you option", true);
-              });
-            }
-          } else {
-            license = prompt(
-              "License ( " +
-                chalk.underline(" MIT ") +
-                "|" +
-                " ISC " +
-                "|" +
-                " none " +
-                " ): "
-            );
-            if (license == "") license = "MIT";
-            // Check if option is existed
-            if (
-              license.toUpperCase() != "MIT" &&
-              license.toUpperCase() != "none" &&
-              license.toUpperCase() != "ISC"
-            ) {
-              showError("Invalid license", true);
-            } else {
-              let configText;
-              if (license.toUpperCase() == "ISC") {
-                var name = prompt("Author: ");
-                configText =
-                  `${html} \n` +
-                  `${css} \n` +
-                  `${js} \n` +
-                  `${license.toUpperCase()}|${name}`;
-              } else {
-                configText =
-                  `${html} \n` + `${css} \n` + `${js} \n` + `${license}`;
-              }
-
-              // Write to config file and create one
-              fs.writeFile(
-                dir + "\\" + "generateConfig.txt",
-                configText,
-                function(err) {
-                  if (err) showError("Something wrong when read options", true);
-                }
-              );
-            }
-          }
-        }
+        checkSupportPrompts = true;
       }
     }
-    // Join config file and dir in path
-    var filePath = path.join(dir, "generateConfig.txt");
 
-    // Store config content for future option
-    var dataOption = [];
+    if (checkSupportPrompts) {
+      (async () => {
+        // @ts-ignore
+        let response = await prompts([
+          {
+            type: "autocomplete",
+            name: "html",
+            message: "HTML preprocessor ( " + htmlOption.join(" | ") + " ): ",
+            choices: [
+              { title: "none" },
+              { title: "haml" },
+              { title: "pug" },
+              { title: "slim" }
+            ]
+          },
+          {
+            type: "autocomplete",
+            name: "css",
+            message: "CSS preprocessor ( " + cssOption.join(" | ") + " ): ",
+            choices: [
+              { title: "none" },
+              { title: "sass" },
+              { title: "scss" },
+              { title: "stylus" },
+              { title: "less" }
+            ]
+          },
+          {
+            type: "autocomplete",
+            name: "js",
+            message: "JS preprocessor ( " + jsOption.join(" | ") + " ): ",
+            choices: [
+              { title: "none" },
+              { title: "typescript" },
+              { title: "coffeescript" }
+            ]
+          },
+          {
+            type: "autocomplete",
+            name: "license",
+            message:
+              "License ( " +
+              chalk.underline(" MIT ") +
+              "|" +
+              " ISC " +
+              "|" +
+              " none " +
+              " ): ",
+            choices: [{ title: "MIT" }, { title: "ISC" }, { title: "none" }]
+          }
+        ]);
+        let dataOption;
+        if (response.license == "ISC") {
+          let response1 = await prompts({
+            type: "text",
+            name: "author",
+            message: "  Author: "
+          });
+          dataOption = [
+            response.html,
+            response.css,
+            response.js,
+            `${response.license}|${response1.author}`
+          ];
+        } else {
+          dataOption = [
+            response.html,
+            response.css,
+            response.js,
+            response.license
+          ];
+        }
 
-    /**
-     * Readfile and store data in dataOption
-     * @param {string} filePath path directory
-     * @param {object} encoding for enconding
-     * @param {any} function for asynchronous
-     */
-    fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
-      // Show error
-      if (!err) {
-        dataOption = data.split("\n").map(x => x.trim()); // Split and trim data from file
+        if (args.remove) {
+          if (args.tree) makeSrc(dataOption, dir, true, true);
+          else makeSrc(dataOption, dir, true);
+        } else {
+          if (args.tree) makeSrc(dataOption, dir, false, true);
+          else makeSrc(dataOption, dir);
+        }
+      })();
+    } else {
+      (async () => {
+        // @ts-ignore
+        let response = await prompts([
+          {
+            type: "text",
+            name: "html",
+            message: `HTML preprocessor ( ${htmlOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "css",
+            message: `CSS preprocessor ( ${cssOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "js",
+            message: `JS preprocessor ( ${jsOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "license",
+            message: `License (${chalk.underline(" MIT ")}| ISC | none ): `
+          }
+        ]);
+        if (response.html == "") response.html = "none";
+        if (response.css == "") response.css = "none";
+        if (response.js == "") response.js = "none";
+        if (response.license == "") response.license = "MIT";
 
-        if (args.remove) makeSrc(dataOption, dir, true);
-        // Create source folder base on data from config file without sample
-        else makeSrc(dataOption, dir); // Create source folder base on data from config file with sample
-      } else showError("Something wrong when read options", true);
-    });
+        let invalid = false;
+        if (!htmlPreprocessor.includes(response.html)) {
+          invalid = true;
+          showError("Invalid html preprocessor type file.");
+        }
+        if (!cssPreprocessor.includes(response.css)) {
+          invalid = true;
+          showError("Invalid css preprocessor type file.");
+        }
+        if (!jsPreprocessor.includes(response.js)) {
+          invalid = true;
+          showError("Invalid js preprocessor type file.");
+        }
+        if (
+          response.license != "MIT" &&
+          response.license != "ISC" &&
+          response.license != "none"
+        ) {
+          invalid = true;
+          showError("Invalid license.");
+        }
+
+        let dataOption;
+        if (!invalid) {
+          if (response.license == "ISC") {
+            let response1 = await prompts({
+              type: "text",
+              name: "author",
+              message: "  Author: "
+            });
+            dataOption = [
+              response.html,
+              response.css,
+              response.js,
+              `${response.license}|${response1.author}`
+            ];
+          } else {
+            dataOption = [
+              response.html,
+              response.css,
+              response.js,
+              response.license
+            ];
+          }
+          if (args.remove) {
+            if (args.tree) makeSrc(dataOption, dir, true, true);
+            else makeSrc(dataOption, dir, true);
+          } else {
+            if (args.tree) makeSrc(dataOption, dir, false, true);
+            else makeSrc(dataOption, dir);
+          }
+        } else {
+          help();
+        }
+      })();
+    }
   }
 } else if (args.tree) {
-  showTree();
+  dirTree(dir);
 } else showError("Can not find this command ", true);
 
 // *********************************************
@@ -189,20 +254,8 @@ if (args.help) {
  * @param {boolean} showHelp This check if we need to show help
  */
 function showError(mess, showHelp = false) {
-  console.error(chalk.red(emoji.get("x") + mess));
+  console.error(chalk.red(!!!mess));
   if (showHelp) help();
-}
-
-/**
- * Show directory tree using genproject
- */
-function showTree() {
-  let dir1 = process.cwd();
-  if (fs.existsSync(`${dir}\\genproject.json`)) {
-    let configData = fs.readFileSync(`${dir}\\genproject.json`);
-    let obj = JSON.parse(configData);
-    console.log(treeify.asTree(obj, true, false));
-  } else showError("It missed gensetup.json", true);
 }
 
 /**
@@ -215,6 +268,8 @@ function showTree() {
  * @returns {Boolean} check error
  */
 function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
+  spinner.start();
+  spinner.text = `Loading ${chalk.yellow(`${fileName}`)}`;
   fs.writeFile(
     `${dirsrc}\\${fileType}\\${subFolder}${fileName}`,
     text,
@@ -225,12 +280,11 @@ function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
         // checkError = true;
         return true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          ` File ${fileName} is created successfully.`
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green(`File ${fileName} is created successfully.`)}`
+        );
+      }, 2200);
     }
   );
   return false;
@@ -241,8 +295,7 @@ function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
  * @param {array} data Save all data type to create folder source
  * @param {string} dir Store directory of source
  */
-function makeSrc(data, dir, remove = false) {
-  var objTree = {};
+function makeSrc(data, dir, remove = false, showTree = false) {
   let checkError = false;
 
   // Store directory of src folder
@@ -253,8 +306,6 @@ function makeSrc(data, dir, remove = false) {
   // Create source folder
   fs.mkdirSync(dirsrc);
   fs.mkdirSync(dirdocs);
-  objTree["src"] = {};
-  objTree["docs"] = null;
 
   if (remove) {
     htmlFile = {
@@ -283,7 +334,7 @@ function makeSrc(data, dir, remove = false) {
         footer: "",
         font: "",
         text: "",
-        main: ""
+        main: cssFile.scss.main
       },
       none: {
         main: ""
@@ -298,7 +349,7 @@ function makeSrc(data, dir, remove = false) {
         footer: "",
         font: "",
         text: "",
-        main: ""
+        main: cssFile.sass.main
       },
       less: {
         reset: "",
@@ -309,7 +360,7 @@ function makeSrc(data, dir, remove = false) {
         footer: "",
         font: "",
         text: "",
-        main: ""
+        main: cssFile.less.main
       },
       stylus: {
         reset: "",
@@ -321,7 +372,7 @@ function makeSrc(data, dir, remove = false) {
         footer: "",
         font: "",
         text: "",
-        main: ""
+        main: cssFile.stylus.main
       }
     };
 
@@ -340,22 +391,25 @@ function makeSrc(data, dir, remove = false) {
 
   // TODO: Create .gitignore
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow(".gitignore")}`;
     fs.writeFile(`${dir}\\.gitignore`, "node_modules", function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File .gitignore is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File .gitignore is created successfully.")}`
+        );
+      }, 700);
     });
   }
 
   // TODO: Create package.json if it not exist
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("package.json")}`;
     let license;
     if (data[3] == "MIT") {
       license = "MIT";
@@ -395,33 +449,35 @@ function makeSrc(data, dir, remove = false) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File package.json is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File package.json is created successfully.")}`
+        );
+      }, 800);
     });
   }
 
   // TODO: Create README.md file to show in github in future
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("README.md")}`;
     fs.writeFile(`${dir}\\README.md`, "", function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File README.md is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File README.md is created successfully.")}`
+        );
+      }, 1000);
     });
   }
 
   // TODO: Create gulpfile.js file
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("gulpfile.js")}`;
     let gulpData = taskFile.gulp.data;
     let cssPackage,
       cssFunction,
@@ -643,17 +699,18 @@ function watch() {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File gulpfile.js is created successfully."
-        )
-      );
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File gulpfile.js is created successfully.")}`
+        );
+      }, 1500);
     });
   }
 
   // TODO: Create LICENSE file to show license of open source project in github in future
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("LICENSE")}`;
     let license;
     if (data[3] != "none") {
       if (data[3] == "MIT") license = licenseFile.mit;
@@ -667,12 +724,11 @@ function watch() {
           showError(err.toString(), true);
           checkError = true;
         }
-        console.log(
-          chalk.green(
-            emoji.get("heavy_check_mark"),
-            " File LICENSE is created successfully."
-          )
-        );
+        setTimeout(() => {
+          spinner.succeed(
+            `${chalk.green("File LICENSE is created successfully.")}`
+          );
+        }, 1100);
       });
     }
   }
@@ -681,88 +737,67 @@ function watch() {
   // Create css folder default
   if (!checkError) {
     fs.mkdirSync(`${dirsrc}\\css`);
-    objTree["src"]["css"] = {};
   }
 
   // Create main.css file in css folder default
   if (!checkError) {
     checkError = createFile(dirsrc, "main.css", "", "css", cssFile.none.main);
-
-    if (!checkError) {
-      objTree["src"]["css"]["main.css"] = null;
-    }
   }
 
   // Create js folder default
   if (!checkError) {
     fs.mkdirSync(`${dirsrc}\\js`);
-    objTree["src"]["js"] = {};
   }
 
   // Create index.js file in js folder default
   if (!checkError) {
     checkError = createFile(dirsrc, "index.js", "", "js", jsFile.none.index);
-
-    if (!checkError) {
-      objTree["src"]["js"]["index.js"] = null;
-    }
   }
 
   // Create index.html file default
   if (!checkError) {
+    spinner.start();
+    spinner.text = `Loading ${chalk.yellow("index.html")}`;
     fs.writeFile(`${dirsrc}\\index.html`, htmlFile.none.index, function(err) {
       if (err) {
         showError(err.toString(), true);
         checkError = true;
       }
-      console.log(
-        chalk.green(
-          emoji.get("heavy_check_mark"),
-          " File index.html is created successfully."
-        )
-      );
-      objTree["src"]["index.html"] = null;
+      setTimeout(() => {
+        spinner.succeed(
+          `${chalk.green("File index.html is created successfully.")}`
+        );
+      }, 2000);
     });
   }
 
   // Check if user contain html preprocessor
   if (data[0] != "none" && !checkError) {
-    fs.mkdirSync(`${dirsrc}\\${data[0]}`); // Create folder with data type
-    objTree["src"][data[0]] = {};
+    fs.mkdirSync(`${dirsrc}\\${data[0]}`);
 
     if (data[0] == "pug") {
       let pugFile = htmlFile.pug;
 
       checkError = createFile(dirsrc, "index.pug", "", "pug", pugFile.index);
-
-      if (!checkError) objTree["src"]["pug"]["index.pug"] = null;
     } else if (data[0] == "haml") {
       let hamlFile = htmlFile.haml;
 
       checkError = createFile(dirsrc, "index.haml", "", "haml", hamlFile.index);
-
-      if (!checkError) objTree["src"]["haml"]["index.haml"] = null;
     } else {
       let slimFile = htmlFile.slim;
       checkError = createFile(dirsrc, "index.slim", "", "slim", slimFile.index);
-
-      if (!checkError) objTree["src"]["slim"]["index.slim"] = null;
     }
   }
 
   // Check if user contain css preprocessor
   if (data[1] != "none" && !checkError) {
-    fs.mkdirSync(`${dirsrc}\\${data[1]}`); // Create folder with data type
-    objTree["src"][data[1]] = {};
+    fs.mkdirSync(`${dirsrc}\\${data[1]}`);
 
     if (data[1] == "less") {
       let lessFile = cssFile.less;
       checkError = createFile(dirsrc, "main.less", "", "less", lessFile.main);
 
-      if (!checkError) objTree["src"]["less"]["main.less"] = null;
-
       fs.mkdirSync(`${dirsrc}\\less\\utilities`);
-      objTree["src"]["less"]["utilities"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -772,8 +807,6 @@ function watch() {
         lessFile.font
       );
 
-      if (!checkError) objTree["src"]["less"]["utilities"]["font.less"] = null;
-
       checkError = createFile(
         dirsrc,
         "text.less",
@@ -782,10 +815,7 @@ function watch() {
         lessFile.text
       );
 
-      if (!checkError) objTree["src"]["less"]["utilities"]["text.less"] = null;
-
       fs.mkdirSync(`${dirsrc}\\less\\layout`);
-      objTree["src"]["less"]["layout"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -795,8 +825,6 @@ function watch() {
         lessFile.flex
       );
 
-      if (!checkError) objTree["src"]["less"]["layout"]["flex.less"] = null;
-
       checkError = createFile(
         dirsrc,
         "header.less",
@@ -804,8 +832,6 @@ function watch() {
         "less",
         lessFile.header
       );
-
-      if (!checkError) objTree["src"]["less"]["layout"]["header.less"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -815,8 +841,6 @@ function watch() {
         lessFile.section
       );
 
-      if (!checkError) objTree["src"]["less"]["layout"]["section.less"] = null;
-
       checkError = createFile(
         dirsrc,
         "footer.less",
@@ -825,10 +849,7 @@ function watch() {
         lessFile.footer
       );
 
-      if (!checkError) objTree["src"]["less"]["layout"]["footer.less"] = null;
-
       fs.mkdirSync(`${dirsrc}\\less\\components`);
-      objTree["src"]["less"]["components"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -838,11 +859,7 @@ function watch() {
         ""
       );
 
-      if (!checkError)
-        objTree["src"]["less"]["components"]["button.less"] = null;
-
       fs.mkdirSync(`${dirsrc}\\less\\base`);
-      objTree["src"]["less"]["base"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -852,8 +869,6 @@ function watch() {
         lessFile.reset
       );
 
-      if (!checkError) objTree["src"]["less"]["base"]["reset.less"] = null;
-
       checkError = createFile(
         dirsrc,
         "typography.less",
@@ -861,17 +876,12 @@ function watch() {
         "less",
         lessFile.typography
       );
-
-      if (!checkError) objTree["src"]["less"]["base"]["typography.less"] = null;
     } else if (data[1] == "sass") {
       let sassFile = cssFile.sass;
 
       checkError = createFile(dirsrc, "main.sass", "", "sass", sassFile.main);
 
-      if (!checkError) objTree["src"]["sass"]["main.sass"] = null;
-
       fs.mkdirSync(`${dirsrc}\\sass\\utilities`);
-      objTree["src"]["sass"]["utilities"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -881,8 +891,6 @@ function watch() {
         sassFile.font
       );
 
-      if (!checkError) objTree["src"]["sass"]["utilities"]["_font.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_text.sass",
@@ -891,10 +899,7 @@ function watch() {
         sassFile.text
       );
 
-      if (!checkError) objTree["src"]["sass"]["utilities"]["_text.sass"] = null;
-
       fs.mkdirSync(`${dirsrc}\\sass\\layout`);
-      objTree["src"]["sass"]["layout"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -904,8 +909,6 @@ function watch() {
         sassFile.flex
       );
 
-      if (!checkError) objTree["src"]["sass"]["layout"]["_flex.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_header.sass",
@@ -913,8 +916,6 @@ function watch() {
         "sass",
         sassFile.header
       );
-
-      if (!checkError) objTree["src"]["sass"]["layout"]["_header.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -924,8 +925,6 @@ function watch() {
         sassFile.section
       );
 
-      if (!checkError) objTree["src"]["sass"]["layout"]["_section.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_footer.sass",
@@ -934,10 +933,7 @@ function watch() {
         sassFile.footer
       );
 
-      if (!checkError) objTree["src"]["sass"]["layout"]["_footer.sass"] = null;
-
       fs.mkdirSync(`${dirsrc}\\sass\\helpers`);
-      objTree["src"]["sass"]["helpers"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -947,9 +943,6 @@ function watch() {
         sassFile.variables
       );
 
-      if (!checkError)
-        objTree["src"]["sass"]["helpers"]["_variables.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_mixins.sass",
@@ -957,8 +950,6 @@ function watch() {
         "sass",
         sassFile.mixins
       );
-
-      if (!checkError) objTree["src"]["sass"]["helpers"]["_mixins.sass"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -968,9 +959,6 @@ function watch() {
         sassFile.functions
       );
 
-      if (!checkError)
-        objTree["src"]["sass"]["helpers"]["_functions.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_helpers.sass",
@@ -979,11 +967,7 @@ function watch() {
         sassFile.helpers
       );
 
-      if (!checkError)
-        objTree["src"]["sass"]["helpers"]["_helpers.sass"] = null;
-
       fs.mkdirSync(`${dirsrc}\\sass\\components`);
-      objTree["src"]["sass"]["components"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -993,11 +977,7 @@ function watch() {
         sassFile.button
       );
 
-      if (!checkError)
-        objTree["src"]["sass"]["components"]["_button.sass"] = null;
-
       fs.mkdirSync(`${dirsrc}\\sass\\base`);
-      objTree["src"]["sass"]["base"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1007,8 +987,6 @@ function watch() {
         sassFile.reset
       );
 
-      if (!checkError) objTree["src"]["sass"]["base"]["_reset.sass"] = null;
-
       checkError = createFile(
         dirsrc,
         "_typography.sass",
@@ -1016,18 +994,12 @@ function watch() {
         "sass",
         sassFile.typography
       );
-
-      if (!checkError)
-        objTree["src"]["sass"]["base"]["_typography.sass"] = null;
     } else if (data[1] == "scss") {
       let scssFile = cssFile.scss;
 
       checkError = createFile(dirsrc, "main.scss", "", "scss", scssFile.main);
 
-      if (!checkError) objTree["src"]["scss"]["main.scss"] = null;
-
       fs.mkdirSync(`${dirsrc}\\scss\\utilities`);
-      objTree["src"]["scss"]["utilities"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1037,8 +1009,6 @@ function watch() {
         scssFile.font
       );
 
-      if (!checkError) objTree["src"]["scss"]["utilities"]["_font.scss"] = null;
-
       checkError = createFile(
         dirsrc,
         "_text.scss",
@@ -1047,10 +1017,7 @@ function watch() {
         scssFile.text
       );
 
-      if (!checkError) objTree["src"]["scss"]["utilities"]["_text.scss"] = null;
-
       fs.mkdirSync(`${dirsrc}\\scss\\layout`);
-      objTree["src"]["scss"]["layout"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1060,8 +1027,6 @@ function watch() {
         scssFile.flex
       );
 
-      if (!checkError) objTree["src"]["scss"]["layout"]["_flex.scss"] = null;
-
       checkError = createFile(
         dirsrc,
         "_header.scss",
@@ -1069,8 +1034,6 @@ function watch() {
         "scss",
         scssFile.header
       );
-
-      if (!checkError) objTree["src"]["scss"]["layout"]["_header.scss"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1080,8 +1043,6 @@ function watch() {
         scssFile.section
       );
 
-      if (!checkError) objTree["src"]["scss"]["layout"]["_section.scss"] = null;
-
       checkError = createFile(
         dirsrc,
         "_footer.scss",
@@ -1090,10 +1051,7 @@ function watch() {
         scssFile.footer
       );
 
-      if (!checkError) objTree["src"]["scss"]["layout"]["_footer.scss"] = null;
-
       fs.mkdirSync(`${dirsrc}\\scss\\helpers`);
-      objTree["src"]["scss"]["helpers"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1104,17 +1062,13 @@ function watch() {
       );
 
       if (!checkError)
-        objTree["src"]["scss"]["helpers"]["_variables.scss"] = null;
-
-      checkError = createFile(
-        dirsrc,
-        "_mixins.scss",
-        "helpers\\",
-        "scss",
-        scssFile.mixins
-      );
-
-      if (!checkError) objTree["src"]["scss"]["helpers"]["_mixins.scss"] = null;
+        checkError = createFile(
+          dirsrc,
+          "_mixins.scss",
+          "helpers\\",
+          "scss",
+          scssFile.mixins
+        );
 
       checkError = createFile(
         dirsrc,
@@ -1124,9 +1078,6 @@ function watch() {
         scssFile.functions
       );
 
-      if (!checkError)
-        objTree["src"]["scss"]["helpers"]["_functions.scss"] = null;
-
       checkError = createFile(
         dirsrc,
         "_helpers.scss",
@@ -1135,11 +1086,7 @@ function watch() {
         scssFile.helpers
       );
 
-      if (!checkError)
-        objTree["src"]["scss"]["helpers"]["_helpers.scss"] = null;
-
       fs.mkdirSync(`${dirsrc}\\scss\\components`);
-      objTree["src"]["scss"]["components"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1149,11 +1096,7 @@ function watch() {
         scssFile.button
       );
 
-      if (!checkError)
-        objTree["src"]["scss"]["components"]["_button.scss"] = null;
-
       fs.mkdirSync(dirsrc + "\\" + "scss" + "\\" + "base");
-      objTree["src"]["scss"]["base"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1163,8 +1106,6 @@ function watch() {
         scssFile.reset
       );
 
-      if (!checkError) objTree["src"]["scss"]["base"]["_reset.scss"] = null;
-
       checkError = createFile(
         dirsrc,
         "_typography.scss",
@@ -1172,9 +1113,6 @@ function watch() {
         "scss",
         scssFile.typography
       );
-
-      if (!checkError)
-        objTree["src"]["scss"]["base"]["_typography.scss"] = null;
     } else {
       let stylusFile = cssFile.stylus;
 
@@ -1186,10 +1124,7 @@ function watch() {
         stylusFile.main
       );
 
-      if (!checkError) objTree["src"]["stylus"]["main.styl"] = null;
-
       fs.mkdirSync(`${dirsrc}\\stylus\\utilities`);
-      objTree["src"]["stylus"]["utilities"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1199,9 +1134,6 @@ function watch() {
         stylusFile.font
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["utilities"]["_font.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_text.styl",
@@ -1210,11 +1142,7 @@ function watch() {
         stylusFile.text
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["utilities"]["_text.styl"] = null;
-
       fs.mkdirSync(`${dirsrc}\\stylus\\layout`);
-      objTree["src"]["stylus"]["layout"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1224,8 +1152,6 @@ function watch() {
         stylusFile.flex
       );
 
-      if (!checkError) objTree["src"]["stylus"]["layout"]["_flex.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_header.styl",
@@ -1233,9 +1159,6 @@ function watch() {
         "stylus",
         stylusFile.header
       );
-
-      if (!checkError)
-        objTree["src"]["stylus"]["layout"]["_header.styl"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1245,9 +1168,6 @@ function watch() {
         stylusFile.section
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["layout"]["_section.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_footer.styl",
@@ -1256,11 +1176,7 @@ function watch() {
         stylusFile.footer
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["layout"]["_footer.styl"] = null;
-
       fs.mkdirSync(`${dirsrc}\\stylus\\helpers`);
-      objTree["src"]["stylus"]["helpers"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1270,9 +1186,6 @@ function watch() {
         stylusFile.variables
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["helpers"]["_variables.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_mixins.styl",
@@ -1280,9 +1193,6 @@ function watch() {
         "stylus",
         stylusFile.mixins
       );
-
-      if (!checkError)
-        objTree["src"]["stylus"]["helpers"]["_mixins.styl"] = null;
 
       checkError = createFile(
         dirsrc,
@@ -1292,9 +1202,6 @@ function watch() {
         stylusFile.functions
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["helpers"]["_functions.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_helpers.styl",
@@ -1303,11 +1210,7 @@ function watch() {
         stylusFile.helpers
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["helpers"]["_helpers.styl"] = null;
-
       fs.mkdirSync(`${dirsrc}\\stylus\\components`);
-      objTree["src"]["stylus"]["components"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1317,11 +1220,7 @@ function watch() {
         stylusFile.button
       );
 
-      if (!checkError)
-        objTree["src"]["stylus"]["components"]["_button.styl"] = null;
-
       fs.mkdirSync(`${dirsrc}\\stylus\\base`);
-      objTree["src"]["stylus"]["base"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1331,8 +1230,6 @@ function watch() {
         stylusFile.reset
       );
 
-      if (!checkError) objTree["src"]["stylus"]["base"]["_reset.styl"] = null;
-
       checkError = createFile(
         dirsrc,
         "_typography.styl",
@@ -1340,9 +1237,6 @@ function watch() {
         "stylus",
         stylusFile.typography
       );
-
-      if (!checkError)
-        objTree["src"]["stylus"]["base"]["_typography.styl"] = null;
     }
   }
 
@@ -1353,16 +1247,12 @@ function watch() {
       // Create ts folder instead of typescript
       let tsFile = jsFile.typescript;
       fs.mkdirSync(`${dirsrc}\\ts`);
-      objTree["src"]["ts"] = {};
 
       checkError = createFile(dirsrc, "index.ts", "", "ts", tsFile.index);
-
-      if (!checkError) objTree["src"]["ts"]["index.ts"] = null;
     } else {
       let coffeeFile = jsFile.coffeescript;
       // Create coffee folder instead of coffeescript
       fs.mkdirSync(`${dirsrc}\\coffeescript`);
-      objTree["src"]["coffeescript"] = {};
 
       checkError = createFile(
         dirsrc,
@@ -1371,7 +1261,6 @@ function watch() {
         "coffeescript",
         coffeeFile.index
       );
-      if (!checkError) objTree["src"]["coffeescript"]["index.coffee"] = null;
     }
   }
 
@@ -1379,17 +1268,11 @@ function watch() {
   if (!checkError) {
     if (remove) {
       fs.mkdirSync(`${dirsrc}\\font`);
-      objTree["src"]["font"] = {};
     } else {
       ncp(`${__dirname}\\font`, `${dirsrc}\\font`, function(err) {
         if (err) {
           return console.error(err);
         }
-        objTree["src"]["font"] = {};
-        objTree["src"]["font"]["FiraCode-Regular.ttf"] = null;
-        objTree["src"]["font"]["Roboto-Bold.ttf"] = null;
-        objTree["src"]["font"]["Roboto-Medium.ttf"] = null;
-        objTree["src"]["font"]["Roboto-Regular.ttf"] = null;
       });
     }
   }
@@ -1398,15 +1281,11 @@ function watch() {
   if (!checkError) {
     if (remove) {
       fs.mkdirSync(`${dirsrc}\\img`);
-      objTree["src"]["img"] = null;
     } else {
       ncp(`${__dirname}\\img`, `${dirsrc}\\img`, function(err) {
         if (err) {
           return console.error(err);
         }
-        objTree["src"]["img"] = {};
-        objTree["src"]["img"]["header.svg"] = null;
-        objTree["src"]["img"]["section.svg"] = null;
       });
     }
   }
@@ -1415,77 +1294,50 @@ function watch() {
   if (!checkError) {
     if (remove) {
       fs.mkdirSync(`${dirsrc}\\lib`);
-      objTree["src"]["lib"] = null;
     } else {
       ncp(`${__dirname}\\lib`, `${dirsrc}\\lib`, function(err) {
         if (err) {
           return console.error(err);
         }
-        objTree["src"]["lib"] = {};
-        objTree["src"]["lib"]["jquery.scrollify.js"] = null;
-        objTree["src"]["lib"]["jquery-3.4.1.min.js"] = null;
       });
     }
   }
 
-  if (!checkError) {
-    objTree[".gitignore"] = null;
-    objTree["gulpfile.js"] = null;
-    objTree["package.json"] = null;
-    objTree["README.md"] = null;
-    objTree["LICENSE"] = null;
-  }
-
-  // Delete config file after create success folder
-  fs.unlinkSync(`${dir}\\generateConfig.txt`);
-  setTimeout(
-    function(objTree) {
-      var json = JSON.stringify(objTree);
-      if (!checkError) {
-        fs.writeFile(`${dir}\\genproject.json`, json, function(err) {
-          if (err) {
-            showError(err.toString(), true);
-            checkError = true;
-          }
-          console.log(
-            chalk.green(
-              emoji.get("heavy_check_mark"),
-              " File genproject.json is created successfully."
-            )
-          );
-          // This show that to do after create project
-          console.log();
-          console.log();
-          let dirArr = dir.split("\\");
-          let folderName = dirArr[dirArr.length - 1];
-          console.log(
-            chalk.blue.bold("Run those command line to see sample website")
-          );
-          console.log();
-          console.log(
-            chalk.green.bold(
-              `Let go to directory:                 cd ${folderName}`
-            )
-          );
-          console.log(
-            chalk.yellow("Show folder and file (optional):     genproject -t")
-          );
-          console.log(
-            chalk.green.bold("Install package for gulp:            npm i")
-          );
-          console.log(
-            chalk.green.bold("Run browsersync in gulp:             gulp watch")
-          );
-          console.log();
-          console.log();
-        });
-      } else {
-        showError("Fail to create folder ", true);
+  setTimeout(function() {
+    if (!checkError) {
+      if (showTree) {
+        console.log();
+        console.log();
+        dirTree(dir);
       }
-    },
-    1000,
-    objTree
-  );
+      console.log();
+      console.log();
+      let dirArr = dir.split("\\");
+      let folderName = dirArr[dirArr.length - 1];
+      console.log(
+        chalk.blue.bold("Run those command line to see sample website")
+      );
+      console.log();
+      console.log(
+        chalk.green.bold(
+          `Let go to directory:                 cd ${folderName}`
+        )
+      );
+      console.log(
+        chalk.yellow("Show folder and file (optional):     genproject -t")
+      );
+      console.log(
+        chalk.green.bold("Install package for gulp:            npm i")
+      );
+      console.log(
+        chalk.green.bold("Run browsersync in gulp:             gulp watch")
+      );
+      console.log();
+      console.log();
+    } else {
+      showError("Fail to create folder ", true);
+    }
+  }, 3000);
 }
 
 /**

@@ -7,16 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.3.0] -
+## [3.0.0] - 2020-01-31
 
 ### Added
 
-- Add package manager option [npm, yarn]
+- Add autocomplete except git bash.
 - Add spin animation.
+- Add show tree
+
+### Changed
+
+- Change syncprompt to prompts
+
+### Remove
+
+- Remove syncprompt package
+- Remove node-emoji package
 
 ### Fixed
 
-- Path of header.svg and section.svg when build in docs
+- Fixed show tree without genproject.json
 
 ## [2.2.0] - 2020-01-30
 
