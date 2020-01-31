@@ -1,6 +1,6 @@
 {
   "name": "@nhn.dev/generate_frontend_project",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "This cli-app use to create front-end project base on preprocessor option and use gulp to run their",
   "main": "bin/index.js",
   "scripts": {
@@ -29,10 +29,8 @@
     "directory-tree": "^2.2.4",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
-    "node-emoji": "^1.10.0",
     "ora": "^4.0.3",
     "prompts": "^2.3.0",
-    "syncprompt": "^2.0.0",
     "treeify": "^1.1.0"
   }
 }
