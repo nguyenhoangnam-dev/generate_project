@@ -11,5 +11,4 @@
 
 - [x] Finish gulpfile.js content
 - [x] Finish sample project
-- [ ] Options yarn and npm
 - [ ] Options gulp and grunt
