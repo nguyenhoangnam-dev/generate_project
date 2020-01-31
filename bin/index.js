@@ -4,24 +4,17 @@
 
 const path = require("path"); // Join path of process.cwd() and file
 const fs = require("fs"); // Create file, delete file, create folder, write to file
-const prompt = require("syncprompt"); // Get input from terminal
 const chalk = require("chalk"); // Color text
-const emoji = require("node-emoji"); // Show emoji
-const treeify = require("treeify"); // Turn object to tree
 const ncp = require("ncp").ncp; // Copy folder
 ncp.limit = 16;
 
 const prompts = require("prompts"); // New prompt to autocomplete
-
-// New feature
 const ora = require("ora");
 // @ts-ignore
 let spinner = new ora({
   discardStdin: false,
   text: ""
 });
-
-//
 
 let htmlFile = require("./html.js"); // Data of all html preprocessor code
 let cssFile = require("./css.js"); // Data of all css preprocessor code
@@ -42,10 +35,8 @@ const jsPreprocessor = ["none", "typescript", "coffeescript"];
 
 // Store argument of cli-app
 var args = require("minimist")(process.argv.slice(2), {
-  // Use --
-  boolean: ["help", "version", "tree", "remove"],
-  // Use -
-  alias: { h: "help", v: "version", t: "tree", r: "remove" }
+  boolean: ["help", "version", "tree", "remove"], // Use --
+  alias: { h: "help", v: "version", t: "tree", r: "remove" } // Use -
 });
 
 var dir = process.cwd(); // current directory
@@ -54,7 +45,7 @@ var dir = process.cwd(); // current directory
 if (args.help) {
   help(); // Show help screen
 } else if (args.version) {
-  console.log("v.1.1.0"); // Show version of app
+  console.log("v3.0.0"); // Show version of app
 } else if (args._[0] == "init") {
   let overwrite = false; // Check if folder name is existed in this directory
   if (args._[1]) {
@@ -63,9 +54,7 @@ if (args.help) {
       dir = `${dir}\\${args._[1]}`; // Change dir to new directory
     } else {
       overwrite = true;
-      console.error(
-        chalk.yellow(emoji.get("no_entry"), "This file name is exist !")
-      );
+      console.error(chalk.yellow("This file name is exist !"));
     }
     if (!overwrite) fs.mkdirSync(dir); // Create new project folder
   }
@@ -158,112 +147,99 @@ if (args.help) {
           ];
         }
 
-        if (args.remove) makeSrc(dataOption, dir, true);
-        else makeSrc(dataOption, dir);
+        if (args.remove) {
+          if (args.tree) makeSrc(dataOption, dir, true, true);
+          else makeSrc(dataOption, dir, true);
+        } else {
+          if (args.tree) makeSrc(dataOption, dir, false, true);
+          else makeSrc(dataOption, dir);
+        }
       })();
     } else {
-      let html = prompt(
-        "HTML preprocessor ( " + htmlOption.join(" | ") + " ): "
-      );
-      if (html == "") html = "none";
-
-      if (!htmlPreprocessor.includes(html))
-        showError("Invalid html preprocessor type file.", true);
-      else {
-        var css = prompt(
-          "CSS preprocessor ( " + cssOption.join(" | ") + " ): "
-        );
-        if (css == "") css = "none";
-
-        if (!cssPreprocessor.includes(css))
-          showError("Invalid css preprocessor type file.", true);
-        else {
-          var js = prompt("JS preprocessor ( " + jsOption.join(" | ") + " ): ");
-          if (js == "") js = "none";
-
-          if (!jsPreprocessor.includes(js))
-            showError("Invalid js preprocessor type file", true);
-          else {
-            var license;
-            if (fs.existsSync(`${process.cwd()}\\package.json`)) {
-              let configData = fs.readFileSync(
-                `${process.cwd()}\\package.json`
-              );
-              let obj = JSON.parse(configData);
-              license = obj["license"];
-              if (license != "MIT" && license != "ISC")
-                showError("Invalid license", true);
-              else {
-                let configText;
-                if (license == "ISC") {
-                  var name = obj["author"];
-                  configText = `${html} \n${css} \n${js} \n${license}|${name}`;
-                } else configText = `${html} \n${css} \n${js} \n${license}`;
-
-                fs.writeFile(`${dir}\\generateConfig.txt`, configText, function(
-                  err
-                ) {
-                  if (err)
-                    showError("Something wrong when read you option", true);
-                });
-              }
-            } else {
-              license = prompt(
-                "License ( " +
-                  chalk.underline(" MIT ") +
-                  "|" +
-                  " ISC " +
-                  "|" +
-                  " none " +
-                  " ): "
-              );
-              if (license == "") license = "MIT";
-              // Check if option is existed
-              if (
-                license.toUpperCase() != "MIT" &&
-                license.toUpperCase() != "none" &&
-                license.toUpperCase() != "ISC"
-              )
-                showError("Invalid license", true);
-              else {
-                let configText;
-                if (license.toUpperCase() == "ISC") {
-                  var name = prompt("Author: ");
-                  configText =
-                    `${html} \n` +
-                    `${css} \n` +
-                    `${js} \n` +
-                    `${license.toUpperCase()}|${name}`;
-                } else configText = `${html} \n${css} \n${js} \n${license}`;
-
-                // Write to config file and create one
-                fs.writeFile(
-                  dir + "\\" + "generateConfig.txt",
-                  configText,
-                  function(err) {
-                    if (err)
-                      showError("Something wrong when read options", true);
-                  }
-                );
-              }
-            }
+      (async () => {
+        // @ts-ignore
+        let response = await prompts([
+          {
+            type: "text",
+            name: "html",
+            message: `HTML preprocessor ( ${htmlOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "css",
+            message: `CSS preprocessor ( ${cssOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "js",
+            message: `JS preprocessor ( ${jsOption.join(" | ")} ): `
+          },
+          {
+            type: "text",
+            name: "license",
+            message: `License (${chalk.underline(" MIT ")}| ISC | none ): `
           }
+        ]);
+        if (response.html == "") response.html = "none";
+        if (response.css == "") response.css = "none";
+        if (response.js == "") response.js = "none";
+        if (response.license == "") response.license = "MIT";
+
+        let invalid = false;
+        if (!htmlPreprocessor.includes(response.html)) {
+          invalid = true;
+          showError("Invalid html preprocessor type file.");
         }
-      }
-      // Join config file and dir in path
-      var filePath = path.join(dir, "generateConfig.txt");
+        if (!cssPreprocessor.includes(response.css)) {
+          invalid = true;
+          showError("Invalid css preprocessor type file.");
+        }
+        if (!jsPreprocessor.includes(response.js)) {
+          invalid = true;
+          showError("Invalid js preprocessor type file.");
+        }
+        if (
+          response.license != "MIT" &&
+          response.license != "ISC" &&
+          response.license != "none"
+        ) {
+          invalid = true;
+          showError("Invalid license.");
+        }
 
-      var dataOption = [];
-
-      fs.readFile(filePath, { encoding: "utf-8" }, function(err, data) {
-        // Show error
-        if (!err) {
-          dataOption = data.split("\n").map(x => x.trim()); // Split and trim data from file
-
-          if (args.remove) makeSrc(dataOption, dir, true, true);
-          else makeSrc(dataOption, dir, false, true);
-        } else showError("Something wrong when read options", true);
-      });
+        let dataOption;
+        if (!invalid) {
+          if (response.license == "ISC") {
+            let response1 = await prompts({
+              type: "text",
+              name: "author",
+              message: "  Author: "
+            });
+            dataOption = [
+              response.html,
+              response.css,
+              response.js,
+              `${response.license}|${response1.author}`
+            ];
+          } else {
+            dataOption = [
+              response.html,
+              response.css,
+              response.js,
+              response.license
+            ];
+          }
+          if (args.remove) {
+            if (args.tree) makeSrc(dataOption, dir, true, true);
+            else makeSrc(dataOption, dir, true);
+          } else {
+            if (args.tree) makeSrc(dataOption, dir, false, true);
+            else makeSrc(dataOption, dir);
+          }
+        } else {
+          help();
+        }
+      })();
     }
   }
 } else if (args.tree) {
@@ -278,7 +254,7 @@ if (args.help) {
  * @param {boolean} showHelp This check if we need to show help
  */
 function showError(mess, showHelp = false) {
-  console.error(chalk.red(emoji.get("x") + mess));
+  console.error(chalk.red(!!!mess));
   if (showHelp) help();
 }
 
@@ -319,7 +295,7 @@ function createFile(dirsrc, fileName, subFolder = "", fileType, text = "") {
  * @param {array} data Save all data type to create folder source
  * @param {string} dir Store directory of source
  */
-function makeSrc(data, dir, remove = false, exFile = false) {
+function makeSrc(data, dir, remove = false, showTree = false) {
   let checkError = false;
 
   // Store directory of src folder
@@ -1327,14 +1303,13 @@ function watch() {
     }
   }
 
-  // Delete config file only in git bash
-  if (exFile) fs.unlinkSync(`${dir}\\generateConfig.txt`);
-
   setTimeout(function() {
     if (!checkError) {
-      console.log();
-      console.log();
-      dirTree(dir);
+      if (showTree) {
+        console.log();
+        console.log();
+        dirTree(dir);
+      }
       console.log();
       console.log();
       let dirArr = dir.split("\\");
