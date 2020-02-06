@@ -7,11 +7,11 @@ html(lang="en")
     // build:css
     link(rel="stylesheet" href="css/main.css")
     // endbuild
-    title Generate front-end project (v2.0.0)
+    title Generate front-end project (v3.1.0)
   body
     header.flex.flex-vcenter.flex-hcenter.scroll#header
       .header.font-roboto
-        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         .header-subtitle.text-center This cli-app used to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
       .section.flex.flex-vcenter.flex-column
@@ -47,6 +47,22 @@ html(lang="en")
     script(src="js/index.js")
     // endbuild`;
 
+let pugSimple = `<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    // build:css
+    link(rel="stylesheet" href="css/main.css")
+    // endbuild
+    title title
+  body
+
+    // build:js
+    script(src="js/index.js")
+    // endbuild`;
+
 let htmlIndex = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -56,12 +72,12 @@ let htmlIndex = `<!DOCTYPE html>
     <!-- build:css-->
     <link rel="stylesheet" href="css/main.css"/>
     <!-- endbuild-->
-    <title>Generate front-end project (v2.0.0)</title>
+    <title>Generate front-end project (v3.1.0)</title>
   </head>
   <body>
     <header class="flex flex-vcenter flex-hcenter scroll" id="header">
       <div class="header font-roboto">
-        <div class="header-title text-bold text-center">Generate front-end project <span class="header-version">v2.0.0</span></div>
+        <div class="header-title text-bold text-center">Generate front-end project <span class="header-version">v3.1.0</span></div>
         <div class="header-subtitle text-center">This cli-app used to create front-end project</div>
       </div>
     </header>
@@ -108,6 +124,25 @@ let htmlIndex = `<!DOCTYPE html>
   </body>
 </html>`;
 
+let htmlSimple = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <!-- build:css-->
+    <link rel="stylesheet" href="css/main.css"/>
+    <!-- endbuild-->
+    <title>title</title>
+  </head>
+  <body>
+
+    <!-- build:js-->
+    <script src="js/index.js"></script>
+    <!-- endbuild-->
+  </body>
+</html>`;
+
 let hamlIndex = `!!!
 %html(lang="en")
   %head
@@ -117,11 +152,11 @@ let hamlIndex = `!!!
     / build:css
     %link(rel="stylesheet" href="css/main.css")
     / endbuild
-    %title Generate front-end project (v2.0.0)
+    %title Generate front-end project (v3.1.0)
   %body
     %header.flex.flex-vcenter.flex-hcenter.scroll#header
       %div.header.font-roboto
-        %div.header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        %div.header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         %div.header-subtitle.text-center This cli-app use to create front-end project
     %section.flex.flex-vcenter.flex-hcenter.scroll#section1
       %div.section.flex.flex-vcenter.flex-column
@@ -156,6 +191,22 @@ let hamlIndex = `!!!
     / build:js
     %script(src="js/index.js")
     / endbuild`;
+
+let hamlSimple = `!!!
+%html(lang="en")
+  %head
+    %meta(charset="UTF-8")
+    %meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    %meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    / build:css
+    %link(rel="stylesheet" href="css/main.css")
+    / endbuild
+    %title title
+  %body
+    / build:js
+    %script(src="js/index.js")
+    / endbuild`;
+
 let slimIndex = `doctype html
 html lang="en"
   head
@@ -165,11 +216,11 @@ html lang="en"
     /! build:css
     link rel="stylesheet" href="css/main.css"
     /! endbuild
-    title Generate front-end project (v2.0.0)
+    title Generate front-end project (v3.1.0)
   body
     header.flex.flex-vcenter.flex-hcenter.scroll#header
       .header.font-roboto
-        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         .header-subtitle.text-center This cli-app use to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
       .section.flex.flex-vcenter.flex-column
@@ -205,18 +256,37 @@ html lang="en"
     script src="js/index.js"
     /! endbuild`;
 
+let slimSimple = `doctype html
+html lang="en"
+  head
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    meta http-equiv="X-UA-Compatible" content="ie=edge"
+    /! build:css
+    link rel="stylesheet" href="css/main.css"
+    /! endbuild
+    title title
+  body
+    /! build:js
+    script src="js/index.js"
+    /! endbuild`;
+
 let html = {
   pug: {
-    index: pugIndex
+    index: pugIndex,
+    simple: pugSimple
   },
   none: {
-    index: htmlIndex
+    index: htmlIndex,
+    simple: htmlSimple
   },
   haml: {
-    index: hamlIndex
+    index: hamlIndex,
+    simple: hamlSimple
   },
   slim: {
-    index: slimIndex
+    index: slimIndex,
+    simple: slimSimple
   }
 };
 

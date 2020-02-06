@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.0] - 2020-01-31
+## [3.1.0] - 2020-02-06
+
+### Added
+
+- Add standard content to html
+
+### Fixed
+
+- Fixed wrong version in sample content
+
+## [3.0.0] - 2020-02-06
 
 ### Added
 
