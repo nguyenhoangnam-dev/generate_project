@@ -7,11 +7,11 @@ html(lang="en")
     // build:css
     link(rel="stylesheet" href="css/main.css")
     // endbuild
-    title Generate front-end project (v2.0.0)
+    title Generate front-end project (v3.1.0)
   body
     header.flex.flex-vcenter.flex-hcenter.scroll#header
       .header.font-roboto
-        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         .header-subtitle.text-center This cli-app used to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
       .section.flex.flex-vcenter.flex-column
@@ -72,12 +72,12 @@ let htmlIndex = `<!DOCTYPE html>
     <!-- build:css-->
     <link rel="stylesheet" href="css/main.css"/>
     <!-- endbuild-->
-    <title>Generate front-end project (v2.0.0)</title>
+    <title>Generate front-end project (v3.1.0)</title>
   </head>
   <body>
     <header class="flex flex-vcenter flex-hcenter scroll" id="header">
       <div class="header font-roboto">
-        <div class="header-title text-bold text-center">Generate front-end project <span class="header-version">v2.0.0</span></div>
+        <div class="header-title text-bold text-center">Generate front-end project <span class="header-version">v3.1.0</span></div>
         <div class="header-subtitle text-center">This cli-app used to create front-end project</div>
       </div>
     </header>
@@ -152,11 +152,11 @@ let hamlIndex = `!!!
     / build:css
     %link(rel="stylesheet" href="css/main.css")
     / endbuild
-    %title Generate front-end project (v2.0.0)
+    %title Generate front-end project (v3.1.0)
   %body
     %header.flex.flex-vcenter.flex-hcenter.scroll#header
       %div.header.font-roboto
-        %div.header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        %div.header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         %div.header-subtitle.text-center This cli-app use to create front-end project
     %section.flex.flex-vcenter.flex-hcenter.scroll#section1
       %div.section.flex.flex-vcenter.flex-column
@@ -216,11 +216,11 @@ html lang="en"
     /! build:css
     link rel="stylesheet" href="css/main.css"
     /! endbuild
-    title Generate front-end project (v2.0.0)
+    title Generate front-end project (v3.1.0)
   body
     header.flex.flex-vcenter.flex-hcenter.scroll#header
       .header.font-roboto
-        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v2.0.0]
+        .header-title.text-bold.text-center Generate front-end project #[span(class="header-version") v3.1.0]
         .header-subtitle.text-center This cli-app use to create front-end project
     section.flex.flex-vcenter.flex-hcenter.scroll#section1
       .section.flex.flex-vcenter.flex-column

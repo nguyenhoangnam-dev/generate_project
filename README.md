@@ -1,4 +1,4 @@
-# Generate front-end project (3.0.0)
+# Generate front-end project (3.1.0)
 
 > This cli-app use to create front-end project base on preprocessor option and use gulp to run their
 
@@ -22,9 +22,11 @@ $ genproject init folder_name
 
 This will show some preprocessor that app can create, underline is default option
 
-![genproject](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genproject.jpg)
+![genproject](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genprojet.jpg)
 
 Then `$ cd` to your new directory and run `genproject --tree` to see all new file and folder (optional)
+
+![tree](https://raw.githubusercontent.com/congviec18120062/store_data/master/genproject/genproject_tree.jpg)
 
 Run `npm install` or `yarn install` to install all packages for gulp
 
