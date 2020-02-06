@@ -310,16 +310,20 @@ function makeSrc(data, dir, remove = false, showTree = false) {
   if (remove) {
     htmlFile = {
       pug: {
-        index: ""
+        index: htmlFile.pug.simple,
+        simple: htmlFile.pug.simple
       },
       none: {
-        index: ""
+        index: htmlFile.none.simple,
+        simple: htmlFile.none.simple
       },
       haml: {
-        index: ""
+        index: htmlFile.haml.simple,
+        simple: htmlFile.haml.simple
       },
       slim: {
-        index: ""
+        index: htmlFile.slim.simple,
+        simple: htmlFile.slim.simple
       }
     };
 

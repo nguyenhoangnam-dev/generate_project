@@ -47,6 +47,22 @@ html(lang="en")
     script(src="js/index.js")
     // endbuild`;
 
+let pugSimple = `<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    // build:css
+    link(rel="stylesheet" href="css/main.css")
+    // endbuild
+    title title
+  body
+
+    // build:js
+    script(src="js/index.js")
+    // endbuild`;
+
 let htmlIndex = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -108,6 +124,25 @@ let htmlIndex = `<!DOCTYPE html>
   </body>
 </html>`;
 
+let htmlSimple = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <!-- build:css-->
+    <link rel="stylesheet" href="css/main.css"/>
+    <!-- endbuild-->
+    <title>title</title>
+  </head>
+  <body>
+
+    <!-- build:js-->
+    <script src="js/index.js"></script>
+    <!-- endbuild-->
+  </body>
+</html>`;
+
 let hamlIndex = `!!!
 %html(lang="en")
   %head
@@ -156,6 +191,22 @@ let hamlIndex = `!!!
     / build:js
     %script(src="js/index.js")
     / endbuild`;
+
+let hamlSimple = `!!!
+%html(lang="en")
+  %head
+    %meta(charset="UTF-8")
+    %meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    %meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    / build:css
+    %link(rel="stylesheet" href="css/main.css")
+    / endbuild
+    %title title
+  %body
+    / build:js
+    %script(src="js/index.js")
+    / endbuild`;
+
 let slimIndex = `doctype html
 html lang="en"
   head
@@ -205,18 +256,37 @@ html lang="en"
     script src="js/index.js"
     /! endbuild`;
 
+let slimSimple = `doctype html
+html lang="en"
+  head
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    meta http-equiv="X-UA-Compatible" content="ie=edge"
+    /! build:css
+    link rel="stylesheet" href="css/main.css"
+    /! endbuild
+    title title
+  body
+    /! build:js
+    script src="js/index.js"
+    /! endbuild`;
+
 let html = {
   pug: {
-    index: pugIndex
+    index: pugIndex,
+    simple: pugSimple
   },
   none: {
-    index: htmlIndex
+    index: htmlIndex,
+    simple: htmlSimple
   },
   haml: {
-    index: hamlIndex
+    index: hamlIndex,
+    simple: hamlSimple
   },
   slim: {
-    index: slimIndex
+    index: slimIndex,
+    simple: slimSimple
   }
 };
 
